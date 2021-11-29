@@ -241,6 +241,7 @@ exit(int exit_status)
       curproc->ofile[fd] = 0;
     }
   }
+
   // TRAP
   if(curproc->killed)
     curproc->exit_status = exit_status+1;

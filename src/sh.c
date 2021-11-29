@@ -168,7 +168,11 @@ main(void)
       runcmd(parsecmd(buf));
     int exit_status;
     wait(&exit_status);
-    printf(1,"Output code: %d\n", exit_status);
+    if (WIFEXITED (exit_status))
+      printf (1, "Output code: %d\n", WEXITSTATUS (exit_status));
+    else if (WIFSIGNALED(exit_status))
+      printf (1, "Output code: %d\n", WEXITTRAP (exit_status));
+    //printf(1,"Output code: %d\n", exit_status);
   }
   exit(0);
 }
