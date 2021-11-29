@@ -21,7 +21,7 @@
 #define WEXITTRAP(n) (n)
 #endif
 
-#define N  1000
+#define N  1000 //NPROC=64
 
 void
 forktest(void)
