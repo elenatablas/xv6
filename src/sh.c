@@ -166,7 +166,9 @@ main(void)
     }
     if(fork1() == 0)
       runcmd(parsecmd(buf));
-    wait(0);
+    int exit_status;
+    wait(&exit_status);
+    printf(1,"Output code: %d\n", exit_status);
   }
   exit(0);
 }

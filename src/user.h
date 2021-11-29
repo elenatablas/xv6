@@ -1,3 +1,22 @@
+#define WIFEXITED(status)   (((status) & 0x7f) == 0)
+#define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
+#define WIFSIGNALED(status) (((status) & 0x7f) != 0)
+#define WEXITTRAP(status)   (((status) & 0x7f)-1)
+
+/*
+       WIFEXITED(wstatus)
+              returns true if the child terminated normally, that is, by calling exit(3) or _exit(2), or by returning from main().
+        0000 0000 0111 1111
+        7 bits
+       WEXITSTATUS(wstatus)
+              returns  the  exit status of the child.  This consists of the least significant 8 bits of the status argument that the child specified in a call
+              to exit(3) or _exit(2) or as the argument for a return statement in main().  This macro should be employed only if WIFEXITED returned true.
+        1111 1111 0000 0000
+       WIFSIGNALED(wstatus)
+              returns true if the child process was terminated by a signal.
+
+*/
+
 struct stat;
 struct rtcdate;
 

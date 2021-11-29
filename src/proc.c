@@ -225,7 +225,7 @@ fork(void)
 // An exited process remains in the zombie state
 // until its parent calls wait(0) to find out it exited.
 void
-exit(int exit_satus)
+exit(int exit_status)
 {
   struct proc *curproc = myproc();
   struct proc *p;
@@ -241,7 +241,13 @@ exit(int exit_satus)
       curproc->ofile[fd] = 0;
     }
   }
-
+  // TRAP
+  if(curproc->killed)
+    curproc->exit_status = exit_status+1;
+  else{ // Salida normal
+    curproc->exit_status = exit_status << 8;
+  }
+  
   begin_op();
   iput(curproc->cwd);
   end_op();
@@ -264,7 +270,7 @@ exit(int exit_satus)
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
 
-  curproc->exit_status = exit_satus;
+  //curproc->exit_status = exit_satus;
 
   sched();
   panic("zombie exit");
@@ -276,7 +282,7 @@ int
 wait(int *exit_status)
 {
   struct proc *p; 
-  int havekids, pid, status;
+  int havekids, pid;
   struct proc *curproc = myproc();
   
   acquire(&ptable.lock);
@@ -292,8 +298,7 @@ wait(int *exit_status)
         // Found one.
         pid = p->pid;
 
-        status = p->exit_status;
-        *exit_status = status;
+        *exit_status = p->exit_status; //TODO: ESTA LÍNEA FALLA
 
         kfree(p->kstack);
         p->kstack = 0;
@@ -303,6 +308,7 @@ wait(int *exit_status)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+        p->exit_status = 0;
         release(&ptable.lock);
         return pid;
       }
