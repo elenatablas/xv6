@@ -52,18 +52,32 @@ sys_getpid(void)
 int
 sys_sbrk(void)
 {
-  int addr;
-  int n;
+  int n, sz;
+  struct proc *curproc = myproc();
 
   if(argint(0, &n) < 0)
     return -1;
-  addr = myproc()->sz +=n;
+
+  sz = curproc->sz;
+  if(n>=0)
+  {
+    if((sz+n) >= KERNBASE)
+      return 0;
+    curproc->sz = sz+n;
+  }
+  else
+  {
+    if((sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)
+      return -1;
+    curproc->sz = sz;
+  }
   
-  myproc()->sz += n;
+  lcr3(V2P(curproc->pgdir));  // Invalidate TLB.
+
   //if(growproc(n) < 0)
   //   return -1;
 
-  return addr;
+  return sz;
 }
 
 int

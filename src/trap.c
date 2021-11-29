@@ -84,11 +84,14 @@ trap(struct trapframe *tf)
     int oldsz = rcr2();
     int newsz = oldsz+PGSIZE;
 
-    if(newsz >= KERNBASE)
-      break;
     //uint a = PGROUNDUP(oldsz);
     uint a = PGROUNDDOWN(oldsz); // ES DOWN y no UP 
     mem = kalloc();
+    if(mem == 0){
+      cprintf("allocuvm out of memory\n");
+      deallocuvm(pgdir, newsz, oldsz);
+      break;
+    }
     memset(mem, 0, PGSIZE);
     if(mappages(pgdir, (char*)a, PGSIZE, V2P(mem), PTE_W|PTE_U) < 0){
       cprintf("allocuvm out of memory (2)\n");
