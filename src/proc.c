@@ -299,7 +299,7 @@ wait(int *exit_status)
         // Found one.
         pid = p->pid;
 
-        *exit_status = p->exit_status; //TODO: ESTA LÍNEA FALLA
+        *exit_status = p->exit_status;
 
         kfree(p->kstack);
         p->kstack = 0;

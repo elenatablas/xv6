@@ -85,7 +85,7 @@ trap(struct trapframe *tf)
     int newsz = oldsz+PGSIZE;
 
     //uint a = PGROUNDUP(oldsz);
-    uint a = PGROUNDDOWN(oldsz); // ES DOWN y no UP 
+    uint a = PGROUNDDOWN(oldsz); // ES DOWN porque mapeas la página que te ha dado error 
     mem = kalloc();
     if(mem == 0){
       cprintf("allocuvm out of memory\n");

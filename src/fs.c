@@ -371,14 +371,14 @@ iunlockput(struct inode *ip)
 // Return the disk block address of the nth block in inode ip.
 // If there is no such block, bmap allocates one.
 static uint
-bmap(struct inode *ip, uint bn)
+bmap(struct inode *ip, uint bn) // bloque del fichero desde el inicio
 {
   uint addr, *a;
   struct buf *bp;
 
   if(bn < NDIRECT){
     if((addr = ip->addrs[bn]) == 0)
-      ip->addrs[bn] = addr = balloc(ip->dev);
+      ip->addrs[bn] = addr = balloc(ip->dev); // localizar bloque de datos libres del bloque del nodo-i
     return addr;
   }
   bn -= NDIRECT;
@@ -396,7 +396,24 @@ bmap(struct inode *ip, uint bn)
     brelse(bp);
     return addr;
   }
+  // TODO: Añadir una comprobación de si el bloque que estás pidiendo
+  bn -= NINDIRECT;
+  /*
+  if(bn < NDINDIRECT)
+  {
+     // Load indirect block, allocating if necessary.
+    if((addr = ip->addrs[NDIRECT+1]) == 0)
+      // obtiene el bloque doblemente indirecto (o se crea si no existe)
+    // dentro del BDI, ver qué BSI tienes que leer
+    // una vez que se lea el BSI, ver dentro del BSI, a qué bloque se refiere 
+    // parecido a esto :
+    if((addr = a[bn]) == 0){
+      a[bn] = addr = balloc(ip->dev);
+      log_write(bp);
 
+    return addr;
+  }
+  */
   panic("bmap: out of range");
 }
 
@@ -406,7 +423,7 @@ bmap(struct inode *ip, uint bn)
 // and has no in-memory reference to it (is
 // not an open file or current directory).
 static void
-itrunc(struct inode *ip)
+itrunc(struct inode *ip) // función de borrado
 {
   int i, j;
   struct buf *bp;
@@ -430,7 +447,12 @@ itrunc(struct inode *ip)
     bfree(ip->dev, ip->addrs[NDIRECT]);
     ip->addrs[NDIRECT] = 0;
   }
+  /*
+  if (ip->addrs[NDIRECT+1])
+  {
 
+  }
+  */
   ip->size = 0;
   iupdate(ip);
 }
