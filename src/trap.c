@@ -78,7 +78,7 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
   case T_PGFLT:
-    void *mem;
+  {
     pde_t *pgdir = myproc()->pgdir;
 
     int oldsz = rcr2();
@@ -86,7 +86,7 @@ trap(struct trapframe *tf)
 
     //uint a = PGROUNDUP(oldsz);
     uint a = PGROUNDDOWN(oldsz); // ES DOWN porque mapeas la página que te ha dado error 
-    mem = kalloc();
+    void *mem = kalloc();
     if(mem == 0){
       cprintf("allocuvm out of memory\n");
       deallocuvm(pgdir, newsz, oldsz);
@@ -104,7 +104,7 @@ trap(struct trapframe *tf)
             myproc()->pid, myproc()->name, tf->trapno,
             tf->err, cpuid(), tf->eip, rcr2());
     break;
-
+  }
   //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) ==0){
