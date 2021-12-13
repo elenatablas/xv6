@@ -79,31 +79,34 @@ trap(struct trapframe *tf)
     break;
   case T_PGFLT:
   {
-    pde_t *pgdir = myproc()->pgdir;
+    if (!(tf->err & 1) && !(rcr2() > myproc()->sz)) { // Si tf->err & 1 = 1 es violación de página y da error
+    
+      pde_t *pgdir = myproc()->pgdir;
 
-    int oldsz = rcr2();
-    int newsz = oldsz+PGSIZE;
+      int oldsz = rcr2();
+      int newsz = oldsz+PGSIZE;
 
-    //uint a = PGROUNDUP(oldsz);
-    uint a = PGROUNDDOWN(oldsz); // ES DOWN porque mapeas la página que te ha dado error 
-    void *mem = kalloc();
-    if(mem == 0){
-      cprintf("allocuvm out of memory\n");
-      deallocuvm(pgdir, newsz, oldsz);
+      //uint a = PGROUNDUP(oldsz);
+      uint a = PGROUNDDOWN(oldsz); // ES DOWN porque mapeas la página que te ha dado error 
+      void *mem = kalloc();
+      if(mem == 0){
+        cprintf("allocuvm out of memory\n");
+        deallocuvm(pgdir, newsz, oldsz);
+        break;
+      }
+      memset(mem, 0, PGSIZE);
+      if(mappages(pgdir, (char*)a, PGSIZE, V2P(mem), PTE_W|PTE_U) < 0){
+        cprintf("allocuvm out of memory (2)\n");
+        deallocuvm(pgdir, newsz, oldsz);
+        kfree(mem);
+        break;
+      }
+      cprintf("pid %d %s: trap %d err %d on cpu %d "
+              "eip 0x%x addr 0x%x--kill proc\n",
+              myproc()->pid, myproc()->name, tf->trapno,
+              tf->err, cpuid(), tf->eip, rcr2());
       break;
     }
-    memset(mem, 0, PGSIZE);
-    if(mappages(pgdir, (char*)a, PGSIZE, V2P(mem), PTE_W|PTE_U) < 0){
-      cprintf("allocuvm out of memory (2)\n");
-      deallocuvm(pgdir, newsz, oldsz);
-      kfree(mem);
-      break;
-    }
-    cprintf("pid %d %s: trap %d err %d on cpu %d "
-            "eip 0x%x addr 0x%x--kill proc\n",
-            myproc()->pid, myproc()->name, tf->trapno,
-            tf->err, cpuid(), tf->eip, rcr2());
-    break;
   }
   //PAGEBREAK: 13
   default:

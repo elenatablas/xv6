@@ -188,6 +188,11 @@ UPROGS=\
 	_clear\
 	_dup2test\
 	_exitwait\
+	_tsbrk1\
+	_tsbrk2\
+	_tsbrk3\
+	_tsbrk4\
+	_tsbrk5\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)

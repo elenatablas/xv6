@@ -62,14 +62,17 @@ sys_sbrk(void)
   if(n>=0)
   {
     if((sz+n) >= KERNBASE)
-      return 0;
+      return -1;
     curproc->sz = sz+n;
   }
-  else
+  else // argumento negativo
   {
-    if((sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)
+    if(sz+n < myproc()->heap)
+    {
       return -1;
-    curproc->sz = sz;
+    }
+    if((curproc->sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)
+      return -1;
   }
   
   lcr3(V2P(curproc->pgdir));  // Invalidate TLB.
@@ -77,7 +80,7 @@ sys_sbrk(void)
   //if(growproc(n) < 0)
   //   return -1;
 
-  return sz;
+  return sz; // retornamos el anterior tamaño
 }
 
 int
