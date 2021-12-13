@@ -83,6 +83,21 @@ sys_sbrk(void)
   return sz; // retornamos el anterior tamaño
 }
 
+int 
+sys_freemem (void)
+{
+  int type;
+  if(argint(0, &type) < 0)
+  {
+    return -1;
+  }
+  if(type == 0)
+  {
+    return getNumFreePages();
+  }
+  return (getNumFreePages()*PGSIZE);
+}
+
 int
 sys_sleep(void)
 {

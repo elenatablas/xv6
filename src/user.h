@@ -3,6 +3,9 @@
 #define WIFSIGNALED(status) (((status) & 0x7f) != 0)
 #define WEXITTRAP(status)   (((status) & 0x7f)-1)
 
+#define F_PAGES 0
+#define F_BYTES 1
+
 /*
        WIFEXITED(wstatus)
               returns true if the child terminated normally, that is, by calling exit(3) or _exit(2), or by returning from main().
@@ -44,6 +47,7 @@ extern int sleep(int);
 extern int uptime(void);
 extern int date(struct rtcdate*);
 extern int dup2(int, int);
+extern int freemem(int);
 
 // ulib.c
 extern int stat(const char*, struct stat*);
