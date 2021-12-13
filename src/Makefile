@@ -229,9 +229,9 @@ GDBPORT = $(shell expr `id -u` % 5000 + 25000)
 QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 	then echo "-gdb tcp::$(GDBPORT)"; \
 	else echo "-s -p $(GDBPORT)"; fi)
-# He quitado un cpu a ver si no peta
+# He quitado un cpu a ver si no peta, si lo pongo a 1 cambia el tfreem 
 ifndef CPUS
-CPUS := 1 
+CPUS := 2 
 endif
 # Hace que vaya más rápido para las operaciones con ficheros
 QEMUEXTRA=-snapshot
