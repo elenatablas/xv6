@@ -373,6 +373,8 @@ iunlockput(struct inode *ip)
 static uint
 bmap(struct inode *ip, uint bn) // bloque del fichero desde el inicio
 {
+
+  // Comprobamos los bloques directos.
   uint addr, *a;
   struct buf *bp;
 
@@ -381,6 +383,9 @@ bmap(struct inode *ip, uint bn) // bloque del fichero desde el inicio
       ip->addrs[bn] = addr = balloc(ip->dev); // localizar bloque de datos libres del bloque del nodo-i
     return addr;
   }
+
+  // Comprobamos bloques simplemente indirectos
+
   bn -= NDIRECT;
 
   if(bn < NINDIRECT){
@@ -396,24 +401,40 @@ bmap(struct inode *ip, uint bn) // bloque del fichero desde el inicio
     brelse(bp);
     return addr;
   }
-  // TODO: Añadir una comprobación de si el bloque que estás pidiendo
+  // Comprobamos bloques doblemente indirectos
   bn -= NINDIRECT;
-  /*
-  if(bn < NDINDIRECT)
-  {
-     // Load indirect block, allocating if necessary.
+   
+  if(bn < NDINDIRECT){
+    
+    // obtiene el bloque doblemente indirecto (o se crea si no existe)
     if((addr = ip->addrs[NDIRECT+1]) == 0)
-      // obtiene el bloque doblemente indirecto (o se crea si no existe)
-    // dentro del BDI, ver qué BSI tienes que leer
-    // una vez que se lea el BSI, ver dentro del BSI, a qué bloque se refiere 
-    // parecido a esto :
-    if((addr = a[bn]) == 0){
-      a[bn] = addr = balloc(ip->dev);
-      log_write(bp);
+      ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
+    bp = bread(ip->dev, addr);
+    a = (uint*)bp->data;
 
+    // dentro del BDI, ver qué BSI tienes que leer
+    bn = bn / NINDIRECT;
+    
+    if((addr = a[bn]) == 0){
+      // a[bn] tenemos la direccion de la segunda tabla (Final)
+      a[bn] = addr = balloc(ip->dev);
+      //log_write(bp);
+    }
+    // una vez que se lea el BSI, ver dentro del BSI, a qué bloque se refiere 
+    bn = bn % NINDIRECT;
+    
+    uint *b = a;
+    if((addr = b[bn]) == 0){
+       b[bn] = addr = balloc(ip->dev);
+       log_write(bp);
+    }
+
+    // En ADDR ahora tenemos la direccion final
+    brelse(bp);
     return addr;
+
   }
-  */
+  
   panic("bmap: out of range");
 }
 

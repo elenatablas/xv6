@@ -194,6 +194,7 @@ UPROGS=\
 	_tsbrk4\
 	_tsbrk5\
 	_tfreem\
+	_big\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
