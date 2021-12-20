@@ -45,6 +45,9 @@ main()
       printf(2, "big: read error at sector %d\n", i);
       exit(-1);
     }
+
+    //printf(2, "big: (%d) debe ser (%d)\n",*(int*)buf, i);
+
     if (*(int*)buf != i)
     {
       printf(2, "big: read the wrong data (%d) for sector %d\n",

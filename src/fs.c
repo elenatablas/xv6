@@ -21,6 +21,7 @@
 #include "buf.h"
 #include "file.h"
 
+
 #define min(a, b) ((a) < (b) ? (a) : (b))
 static void itrunc(struct inode*);
 // there should be one superblock per disk device, but we run with
@@ -375,8 +376,8 @@ bmap(struct inode *ip, uint bn) // bloque del fichero desde el inicio
 {
 
   // Comprobamos los bloques directos.
-  uint addr, *a;
-  struct buf *bp;
+  uint addr, *a, *b;
+  struct buf *bp, *bp2;
 
   if(bn < NDIRECT){
     if((addr = ip->addrs[bn]) == 0)
@@ -405,32 +406,49 @@ bmap(struct inode *ip, uint bn) // bloque del fichero desde el inicio
   bn -= NINDIRECT;
    
   if(bn < NDINDIRECT){
-    
+
+  
     // obtiene el bloque doblemente indirecto (o se crea si no existe)
     if((addr = ip->addrs[NDIRECT+1]) == 0)
       ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
     bp = bread(ip->dev, addr);
-    a = (uint*)bp->data;
 
+    a = (uint*)bp->data;
+    
     // dentro del BDI, ver qué BSI tienes que leer
-    bn = bn / NINDIRECT;
-    
-    if((addr = a[bn]) == 0){
+
+    int global_bn = bn;
+    bn = (global_bn / NINDIRECT);
+
+    int index_a = bn;
+
+    if((addr = a[index_a]) == 0){
       // a[bn] tenemos la direccion de la segunda tabla (Final)
-      a[bn] = addr = balloc(ip->dev);
-      //log_write(bp);
+      a[index_a] = addr = balloc(ip->dev);
+      log_write(bp);
     }
+    bp2 = bread(ip->dev, addr);
     // una vez que se lea el BSI, ver dentro del BSI, a qué bloque se refiere 
-    bn = bn % NINDIRECT;
-    
-    uint *b = a;
-    if((addr = b[bn]) == 0){
-       b[bn] = addr = balloc(ip->dev);
-       log_write(bp);
+
+
+    bn = (global_bn % NINDIRECT);
+    int index_b = bn;
+
+    b = (uint*)bp2->data;
+
+    if((addr = b[index_b]) == 0){
+      b[index_b] = addr = balloc(ip->dev);
+      log_write(bp2);
     }
+
+    brelse(bp2);
 
     // En ADDR ahora tenemos la direccion final
     brelse(bp);
+    
+    //cprintf("a[%d] b[%d]\n",index_a, index_b);
+
+
     return addr;
 
   }
@@ -468,12 +486,29 @@ itrunc(struct inode *ip) // función de borrado
     bfree(ip->dev, ip->addrs[NDIRECT]);
     ip->addrs[NDIRECT] = 0;
   }
-  /*
+
   if (ip->addrs[NDIRECT+1])
   {
+    bp = bread(ip->dev, ip->addrs[NDIRECT+1]);
+    a = (uint*)bp->data;
+    for(j = 0; j < NINDIRECT; j++){
 
+      // Si a[j] apunta a una tabla, recorrer esa tabla y liberar todos los bloques
+      if(a[j]){
+        for(int k = 0; k < NINDIRECT; k++){
+
+          //b = a[j];
+        
+          //bfree(ip->dev, b[k]);
+
+        }
+        bfree(ip->dev, a[j]);  
+      }
+    }
+    brelse(bp);
+    bfree(ip->dev, ip->addrs[NDIRECT+1]);
+    ip->addrs[NDIRECT+1] = 0;
   }
-  */
   ip->size = 0;
   iupdate(ip);
 }
