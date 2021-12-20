@@ -1,0 +1,271 @@
+%Import package
+
+%Magenes
+\usepackage[margin=1 in, includefoot]{geometry}
+
+% Acentos, letras, etc
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\addto\captionsspanish{
+\renewcommand{\chaptername}{}
+}
+\selectlanguage{spanish}
+\usepackage{lettrine, Zallman}
+\renewcommand\LettrineFontHook{\Zallmanfamily}
+
+% Caja de texto
+\usepackage{parskip}
+
+\usepackage{times}
+\usepackage{ulem} % texto tachado
+\usepackage{lipsum}
+\usepackage[usenames]{color} % color en texto
+%Creación de mis propios colores
+\definecolor{rojoOscuro}{RGB}{153,0,0}
+\definecolor{verdeOscuro}{RGB}{0,153,0}
+\usepackage{verbatim} % comentarios
+% Letra para código
+\usepackage{listings}
+\lstdefinestyle{consola}
+{basicstyle=\scriptsize\bf\ttfamily,
+backgroundcolor=\color{gray75},
+}
+
+% Enumerados
+%\renewcommand{\theenumi}{\Alph{enumi}} %Letras mayúsculas
+%\renewcommand{\labelenumi}{{\theenumi})}
+\renewcommand{\labelenumii}{\alph{enumii}$)$ }
+
+\usepackage{comment}
+
+% Header and Footer Stuff
+\usepackage{fancyhdr}
+
+%hipervínculos, referencias, citas, etc
+\usepackage[colorlinks=true, 
+		     linkcolor=magenta, 
+		     citecolor = black,
+		     urlcolor = blue]{hyperref}
+\pagestyle{fancy}
+\fancyhead[L,RO]{}
+\fancyhead[LO,R]{}
+%fancy
+\renewcommand{\footrulewidth}{1pt}
+
+% Espacios en los títulos
+%\usepackage{titlesec}
+
+% Tablas de contenidos separadas, Ramon Sánchez y Pedro M. Ruiz
+% https://www.ctan.org/pkg/minitoc
+%\usepackage[spanish]{minitoc}
+
+% Símbolos matemáticos
+\usepackage{amsmath}
+\usepackage{array}
+
+% Figuras, gráficas, tablas y matrices
+\usepackage{float}
+\usepackage{subfigure} % varias figuras
+\usepackage{graphicx} 
+\usepackage{longtable}
+%\graphicspath{ {images/} }
+
+
+% Color en las tablas
+\usepackage{color}
+\usepackage{epsfig}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage[table]{xcolor}
+\usepackage{soul}
+
+%https://ondahostil.wordpress.com/2017/05/17/lo-que-he-aprendido-cuadros-de-texto-de-colores-en-latex/
+\usepackage{lmodern}
+\usepackage{tcolorbox}
+\tcbuselibrary{listingsutf8}
+
+% Definir cuadro de ancho del texto
+\newtcolorbox{mybox}[1]{colback=purple!5!white,colframe=purple!75!black,fonttitle=\bfseries,title=#1}
+% OPCIONES
+% colback: color de fondo
+% colframe: color de borde
+% fonttitle: estilo de título
+% title: título de la cuadro o referencia a argumento
+
+% Cuadro estrecho
+\newtcbox{cuadro}[1]{colback=blue!5!white,colframe=blue!75!black,fonttitle=\bfseries,title=#1}
+
+% Cuadro numerado para ejemplos
+\newtcolorbox[auto counter,number within=subsection]{example}[2][]
+{colback=purple!5!white,colframe=purple!75!black,fonttitle=\bfseries, title=Ejemplo~\thetcbcounter: #2,#1}
+
+\newtcolorbox[auto counter,number within=subsection]{ejercicio}[2][]
+{colback=orange!5!white,colframe=orange!75!black,fonttitle=\bfseries, title=#2,#1}
+
+\newtcolorbox[auto counter,number within=subsection]{solucion}[2][]
+{colback=yellow!5!white,colframe=yellow!75!black,fonttitle=\bfseries, title=#2,#1}
+
+% Esquemas con llaves https://tex.stackexchange.com/questions/164664/how-to-create-an-array-with-both-vertical-and-horizontal-braces-around-the-eleme
+\newcommand\undermat[2]{%
+\makebox[0pt][l]{$\smash{\underbrace{\phantom{%
+\begin{matrix}#2\end{matrix}}}_{\text{$#1$}}}$}#2}
+
+% CheckBox-todo-list
+%https://tex.stackexchange.com/questions/247681/how-to-create-checkbox-todo-list
+\usepackage{enumitem,amssymb}
+\newlist{todolist}{itemize}{2}
+\setlist[todolist]{label=$\square$}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\done}{\rlap{$\square$}{\raisebox{2pt}{\large\hspace{1pt}\cmark}}%
+\hspace{-2.5pt}}
+\newcommand{\wontfix}{\rlap{$\square$}{\large\hspace{1pt}\xmark}}
+
+% Licencia
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={3.0},
+]{doclicense}
+
+% Letra para código http://www.rafalinux.com/?p=599
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+\definecolor{pblue}{rgb}{0.13,0.13,1}
+\definecolor{pgreen}{rgb}{0,0.5,0}
+\definecolor{pred}{rgb}{0.9,0,0}
+\definecolor{pgrey}{rgb}{0.46,0.45,0.48}
+
+\usepackage{listings}
+\lstset{ 
+	frame=Ltb,
+	framerule=0pt,
+	aboveskip=0.5cm,
+	framextopmargin=3pt,
+	framexbottommargin=3pt,
+	framexleftmargin=0.2cm,
+	framesep=0pt,
+	rulesep=.4pt,
+	backgroundcolor=\color{gray97},
+	rulesepcolor=\color{black},
+%
+	stringstyle=\ttfamily,
+	showstringspaces = false,
+	basicstyle=\tiny\ttfamily,
+	commentstyle=\color{gray45},
+	keywordstyle=\bfseries,
+%
+	numbers=left,
+	numbersep=7pt,
+	numberstyle=\tiny,
+	numberfirstline = false,
+	breaklines=true,
+}
+
+% minimizar fragmentado de listados
+\lstnewenvironment{listing}[1][]
+{\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
+
+\lstdefinestyle{consola}
+{basicstyle=\scriptsize\bf\ttfamily,
+backgroundcolor=\color{gray75},
+}
+
+\usepackage{inconsolata}
+% https://tex.stackexchange.com/questions/115467/listings-highlight-java-annotations
+
+\lstset{language=Java,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  commentstyle=\color{pgreen},
+  keywordstyle=\color{pblue},
+  stringstyle=\color{pred},
+  basicstyle=\ttfamily,
+  moredelim=[il][\textcolor{pgrey}]{$$},
+  moredelim=[is][\textcolor{pgrey}]{\%\%}{\%\%}
+}
+
+%Cuestionario
+\usepackage{multicol}
+\definecolor{verdeOscuro}{rgb}{0.05, 0.5, 0.06}
+
+\newcommand{\Width}{\textwidth}
+\newcommand{\HalfWidth}{0.46\textwidth}
+\newcommand{\Height}{0.95\textheight}
+\newcommand{\HalfHeight}{0.45\textheight}
+\newcommand{\QuarterHeight}{0.20\textheight}
+\newcommand{\HorizontalLine}
+{
+  \noindent\makebox[\linewidth]{\rule{\Width}{0.4pt}}
+}
+\newcommand{\IndentOn}{\setlength{\parindent}{12pt}}
+\newcommand{\IndentOff}{\setlength{\parindent}{0pt}}
+
+\newcounter{QuestionCounter}
+\setcounter{QuestionCounter}{1}
+
+\newenvironment{QuestionnaireQuestions}
+{
+  \begin{small}
+    \setlength{\columnsep}{1cm}
+    \setlength{\parskip}{12pt plus 0pt minus 9pt} % ELASTIC SPACE BETWEEN QUESTIONS
+    \noindent \begin{multicols}{2}
+}
+{
+  \end{multicols}
+  \end{small}
+  \newpage
+}
+\newcommand\QuestionnaireComment[1] 
+{
+  \fbox{
+		\begin{minipage}{\HalfWidth}
+			\small{\underline{Razonamiento}: \textcolor{red}{ #1 }}
+		\end{minipage}} 
+}
+\newenvironment{QuestionnaireQuestion}[1][]
+{
+  \begin{minipage}{\HalfWidth}
+    \HorizontalLine\\
+    \tiny{\textbf{\arabic{QuestionCounter}. #1}}
+    \begin{scriptsize}
+    \begin{enumerate}[label=\alph*)]
+}
+{
+  \\
+  \end{enumerate}
+  \end{scriptsize}
+  \end{minipage}
+  \stepcounter{QuestionCounter}
+}
+%Llaves
+\usepackage{schemata}
+% Foto
+\usepackage{wrapfig}
+% Tablas
+\usepackage{multirow}
+\usepackage{tikz}
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
+
+%https://ondahostil.wordpress.com/2017/05/17/lo-que-he-aprendido-cuadros-de-texto-de-colores-en-latex/
+\usepackage{lmodern}
+\usepackage{tcolorbox}
+\tcbuselibrary{listingsutf8}
+
+\setlength{\parindent}{0.5cm}
+%\setlength{\parskip}{\baselineskip} 
+\lhead[\leftmark]{Rodríguez López, Enrique y Pérez González-Tablas, Elena}
+\rhead[Nombre Autor]{ASO, 2021/22}
+\newtcolorbox[auto counter,number within=subsection]{ejer}[1][]
+{colback=blue!5!white,colframe=blue!75!black,fonttitle=\bfseries, title=#1}
+\graphicspath{ {images/} }
+
+
+\usepackage{tikz}
+\usetikzlibrary{fit,positioning}
