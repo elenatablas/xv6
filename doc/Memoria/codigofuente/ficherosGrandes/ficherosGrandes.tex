@@ -12,17 +12,3 @@
 \input{codigofuente/ficherosGrandes/ejercicios/ejer1}
 \input{codigofuente/ficherosGrandes/ejercicios/ejer2}
 \newpage
-
-
-
-
-
-%%% CÓDIGO %%%
-\begin{listing}[style=consola]
-RouterB0(config)# router rip
-RouterB0(config-router)# redistribute ospf 100 metric 1
-RouterB0(config-router)# passive-interface FastEthernet0/0
-RouterB0(config-router)# passive-interface Serial3/0
-RouterB0(config-router)# passive-interface Serial4/0
-RouterB0(config-router)# exit
-\end{listing}

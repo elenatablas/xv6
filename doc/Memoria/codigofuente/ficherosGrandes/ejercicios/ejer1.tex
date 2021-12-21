@@ -1,0 +1,119 @@
+\section{Ejercicio 1}
+\subsection{Enunciado}
+\begin{ejer}
+    \textbf{1.[bmap()]} Modifica \texttt{bmap()} para que implemente un bloque doblemente indirecto. 
+    No puedes cambiar el tamaño del \texttt{nodo-i} en disco, por lo que sacrificaremos un bloque directo para 
+    implementar el doblemente indirecto.
+\end{ejer}
+\subsection{Desarrollo}
+\subsubsection{xv6/file.h}
+\begin{listing}
+@@ -22,7 +22,7 @@ struct inode {
+    short minor;
+    short nlink;
+    uint size;
+-   uint addrs[NDIRECT+1];
++   uint addrs[NDIRECT+1+1];
+  };
+\end{listing}
+
+\subsubsection{xv6/fs.h }
+\begin{listing}
+@@ -21,9 +21,10 @@ struct superblock {
+-   #define NDIRECT 12
++   #define NDIRECT 11
+    #define NINDIRECT (BSIZE / sizeof(uint))
++   #define NDINDIRECT (NINDIRECT * NINDIRECT)
+-   #define MAXFILE (NDIRECT + NINDIRECT)
++   #define MAXFILE (NDIRECT + NINDIRECT + NDINDIRECT)
+@@ -32,7 +33,7 @@ struct dinode {
+    short minor;          // Minor device number (T_DEV only)
+    short nlink;          // Number of links to inode in file system
+    uint size;            // Size of file (bytes)
+-   uint addrs[NDIRECT+1];
++   uint addrs[NDIRECT+1+1]; // Data block addresses (Directos + BSI + BDI)
+  };
+\end{listing}
+
+\subsubsection{xv6/param.h}
+\begin{listing}
+@@ -10,5 +10,5 @@
+    #define MAXOPBLOCKS  10  // max # of blocks any FS op writes
+    #define LOGSIZE      (MAXOPBLOCKS*3)  // max data blocks in on-disk log
+    #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
+-   #define FSSIZE 1000 // size of file system in blocks
++   #define FSSIZE 20000 
+\end{listing}
+
+\subsubsection{xv6/fs.c}
+\begin{listing}
+@@ -375,8 +376,8 @@ bmap(struct inode *ip, uint bn)
+-   uint addr, *a;
+-   struct buf *bp;
++   uint addr, *a, *b;
++   struct buf *bp, *bp2;
+@@ -405,32 +406,49 @@ bmap(struct inode *ip, uint bn)
+    if(bn < NINDIRECT){
+        brelse(bp);
+        return addr;
+    }
++    bn -= NINDIRECT;
++    if(bn < NDINDIRECT){
++       if((addr = ip->addrs[NDIRECT+1]) == 0)
++           ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
++       bp = bread(ip->dev, addr);
++       a = (uint*)bp->data;
++       int global_bn = bn;
++       bn = (global_bn / NINDIRECT);
++       int index_a = bn;
++       if((addr = a[index_a]) == 0){
++           a[index_a] = addr = balloc(ip->dev);
++           log_write(bp);
++       }
++       bp2 = bread(ip->dev, addr);
++       bn = (global_bn % NINDIRECT);
++       int index_b = bn;
++       b = (uint*)bp2->data;
++       if((addr = b[index_b]) == 0){
++           b[index_b] = addr = balloc(ip->dev);
++           log_write(bp2);
++       }
++       brelse(bp2);
++       brelse(bp);
++       return addr;
++   }
+    panic("bmap: out of range");
+ }
+\end{listing}
+
+
+\subsection{Ficheros de prueba}
+
+\subsubsection{xv6/Makefile}
+\begin{listing}
+@@ -194,6 +194,7 @@ UPROGS=\
+    _tsbrk4\
+    _tsbrk5\
+    _tfreem\
++   _big\
+  };
+\end{listing}
+\subsubsection{Salida del fichero prueba}
+\begin{listing}[style=consola]
+    Booting from Hard Disk...
+    xv6...
+    cpu0: starting 0
+    sb: size 20000 nblocks 19937 ninodes 200 nlog 30 logstart 2 inodestart 32 bmap start 58
+    init: starting sh
+    $ big
+    pid 4 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
+    pid 4 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
+    .........................................................................................
+    .......................................................................
+    wrote 16523 sectors
+    done; ok
+    Output code: 0
+\end{listing}
+
+\par Si todo va bien, el programa \texttt{big.c} informará que ha podido escribir 
+\textbf{16523} sectores. Necesitará bastante tiempo para terminar la ejecución.
