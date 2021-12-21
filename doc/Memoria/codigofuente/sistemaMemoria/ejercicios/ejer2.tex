@@ -1,0 +1,25 @@
+\section{Ejercicio 2}
+\subsection{Enunciado}
+\begin{ejer}
+    \textbf{2.[trap]} Modifica el código del primer ejercicio para que contemple estas situaciones:
+    \begin{itemize}
+        \item El caso de un argumento negativo al llamarse a \texttt{sbrk()}.
+        \item Manejar el caso de fallos en la página inválida debajo de la pila.
+        \item Verificar que \texttt{fork()} y \texttt{exit()/wait()} funciona en el caso de que haya
+    direcciones virtuales sin memoria reservada para ellas.
+        \item Asegurarse de que funciona el uso por parte del kernel de páginas de usuario que todavía no han sido 
+    reservadas (p.e. si un programa pasa una dirección de la zona de usuario todavía no reservada a \texttt{read()}).
+    \end{itemize}
+\end{ejer}
+\subsection{Desarrollo}
+\begin{listing}
+@@
+\end{listing}
+
+\subsection{Ficheros de prueba}
+\subsubsection{Fichero sbrk.c}
+\subsubsection{Salida del fichero prueba}
+\begin{listing}[style=consola]
+$:
+\end{listing}
+\subsubsection{Ejecución de tuberías}
