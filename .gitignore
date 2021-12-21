@@ -1,0 +1,10 @@
+.DS_Store
+doc/Memoria/xv6.aux
+doc/Memoria/xv6.fdb_latexmk
+doc/Memoria/xv6.fls
+doc/Memoria/xv6.log
+doc/Memoria/xv6.pdf
+doc/Memoria/xv6.out
+doc/Memoria/xv6.synctex.gz
+doc/Memoria/xv6.toc
+doc/transparencias/*
