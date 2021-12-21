@@ -1,0 +1,22 @@
+\section{Ejercicio 1}
+\subsection{Enunciado}
+\begin{ejer}
+    \textbf{1.[date()]} Añade una nueva llamada al sistema a \texttt{xv6}: \texttt{int date(struct rtcdate *d)}.
+\end{ejer}
+\subsection{Desarrollo}
+
+\subsubsection{xv6/Makefile}
+\begin{listing}
+@@
+\end{listing}
+
+\subsection{Fichero de prueba}
+
+\subsubsection{Salida del fichero prueba}
+\begin{listing}[style=consola]
+    $ date
+    pid 70 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
+    pid 70 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
+    Chiquillo, vaya cabeza que tienes. Hoy estamos a 21/12/2021
+    Output code: 0
+\end{listing}

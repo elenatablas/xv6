@@ -1,0 +1,121 @@
+\section{Ejercicio 3}
+\subsection{Enunciado}
+\begin{ejer}
+    \textbf{3.[exit()\&wait()]} Modifica las llamadas \texttt{exit()} y \texttt{wait()} para que sigan la signatura de las
+    funciones de \texttt{POSIX}, es decir: \texttt{int wait(int* status)} y \texttt{void exit(int status)}.
+\end{ejer}
+\subsection{Desarrollo}
+\begin{listing}
+@@
+\end{listing}
+\subsection{Fichero de prueba}
+\subsubsection{Salida del fichero prueba}
+\begin{listing}[style=consola]
+    $ exitwait
+    pid 5 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
+    pid 5 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
+    exit/wait with status test
+    pid 6 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 7 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 8 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 9 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 10 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 11 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 12 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 13 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 14 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 15 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 16 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 17 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 18 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 19 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 20 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 21 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 22 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 23 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 24 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 25 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 26 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 27 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 28 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 29 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 30 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 31 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 32 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 33 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 34 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 35 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 36 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 37 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 38 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 39 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 40 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 41 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 42 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 43 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 44 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    pid 45 exitwait: trap 0 err 0 on cpu 0 eip 0x52 addr 0xcfa4--kill proc
+    Exited child (failure) 6, trap 0
+    Exited child (failure) 7, trap 0
+    Exited child (failure) 8, trap 0
+    Exited child (failure) 9, trap 0
+    Exited child (failure) 10, trap 0
+    Exited child (failure) 11, trap 0
+    Exited child (failure) 12, trap 0
+    Exited child (failure) 13, trap 0
+    Exited child (failure) 14, trap 0
+    Exited child (failure) 15, trap 0
+    Exited child (failure) 16, trap 0
+    Exited child (failure) 17, trap 0
+    Exited child (failure) 18, trap 0
+    Exited child (failure) 19, trap 0
+    Exited child (failure) 20, trap 0
+    Exited child (failure) 21, trap 0
+    Exited child (failure) 22, trap 0
+    Exited child (failure) 23, trap 0
+    Exited child (failure) 24, trap 0
+    Exited child (failure) 25, trap 0
+    Exited child (failure) 26, trap 0
+    Exited child (failure) 27, trap 0
+    Exited child (failure) 28, trap 0
+    Exited child (failure) 29, trap 0
+    Exited child (failure) 30, trap 0
+    Exited child (failure) 31, trap 0
+    Exited child (failure) 32, trap 0
+    Exited child (failure) 33, trap 0
+    Exited child (failure) 34, trap 0
+    Exited child (failure) 35, trap 0
+    Exited child (failure) 36, trap 0
+    Exited child (failure) 37, trap 0
+    Exited child (failure) 38, trap 0
+    Exited child (failure) 39, trap 0
+    Exited child (failure) 40, trap 0
+    Exited child (failure) 41, trap 0
+    Exited child (failure) 42, trap 0
+    Exited child (failure) 43, trap 0
+    Exited child (failure) 44, trap 0
+    Exited child (failure) 45, trap 0
+    Exited child 46, exitcode 39
+    Exited child 47, exitcode 40
+    Exited child 48, exitcode 41
+    Exited child 49, exitcode 42
+    Exited child 50, exitcode 43
+    Exited child 51, exitcode 44
+    Exited child 52, exitcode 45
+    Exited child 53, exitcode 46
+    Exited child 54, exitcode 47
+    Exited child 55, exitcode 48
+    Exited child 56, exitcode 49
+    Exited child 57, exitcode 50
+    Exited child 58, exitcode 51
+    Exited child 59, exitcode 52
+    Exited child 60, exitcode 53
+    Exited child 61, exitcode 54
+    Exited child 62, exitcode 55
+    Exited child 63, exitcode 56
+    Exited child 64, exitcode 57
+    Exited child 65, exitcode 58
+    Exited child 66, exitcode 59
+    fork test OK
+    Output code: 0
+\end{listing}

@@ -1,0 +1,24 @@
+\section{Ejercicio 2}
+\subsection{Enunciado}
+\begin{ejer}
+    \textbf{2.[dup2()]} Implementa la llamada al sistema \texttt{dup2()} y modifica el shell
+para usarla (usa como ejemplo la implementación de la llamada al sistema \texttt{dup()} y consulta cómo
+debe de comportarse \texttt{dup2()} según el estándar \texttt{POSIX}).
+\end{ejer}
+\subsection{Desarrollo}
+\begin{listing}
+@@
+\end{listing}
+\subsection{Fichero de prueba}
+
+\subsubsection{Salida del fichero prueba}
+\begin{listing}[style=consola]
+    $ dup2test
+    pid 69 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
+    pid 69 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
+    Este mensaje debe salir por terminal.
+    Este mensaje debe salir por terminal (2).
+    Este mensaje debe salir por terminal (3).
+    Este mensaje debe salir por terminal.
+    Output code: 0
+\end{listing}
