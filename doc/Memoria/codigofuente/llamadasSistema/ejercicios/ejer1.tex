@@ -1,3 +1,4 @@
+%%%%%%%%%%%%%%%%%%%%%% LLAMADAS AL SISTEMA - EJERCICIO 1 %%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicio 1}
 \subsection{Enunciado}
 \begin{ejer}
@@ -5,18 +6,112 @@
 \end{ejer}
 \subsection{Desarrollo}
 
-\subsubsection{xv6/Makefile}
+\subsubsection{xv6/syscall.h}
 \begin{listing}
-@@
+@@ -20,3 +20,4 @@
+    #define SYS_link   19
+    #define SYS_mkdir  20
+    #define SYS_close  21
++   #define SYS_date   22
 \end{listing}
+\par Le damos un nuevo número a la llamada.
+
+\subsubsection{xv6/usys.S}
+\begin{listing}
+@@ -28,4 +28,5 @@
+    SYSCALL(getpid)
+    SYSCALL(sbrk)
+    SYSCALL(sleep)
+    SYSCALL(uptime)
++   SYSCALL(date)
+\end{listing}
+\par Añadimos la llamada \texttt{date}.
+
+\subsubsection{xv6/user.h}
+\begin{listing}
+@@ -21,6 +21,7 @@ 
+// system calls
+    extern int dup(int);
+    extern int getpid(void);
+    extern char* sbrk(int);
+    extern int sleep(int);
+    extern int uptime(void);
++   extern int date(struct rtcdate*);
+\end{listing}
+\par Añadimos la llamada \texttt{date()} al fichero de definición de llamadas 
+al sistema para los programas de usuario.
+
+\subsubsection{xv6/syscall.c}
+\begin{listing}
+@@ -101,4 +101,5 @@
+    extern int sys_unlink(void);
+    extern int sys_wait(void);
+    extern int sys_write(void);
+    extern int sys_uptime(void);
++   extern int sys_date(void);
+@@ -125,5 +126,6 @@ static int (*syscalls[])(void) = {
+    [SYS_unlink]  sys_unlink,
+    [SYS_link]    sys_link,
+    [SYS_mkdir]   sys_mkdir,
+    [SYS_close]   sys_close,
++   [SYS_date]    sys_date,
+    };
+\end{listing}
+\par Añadimos la definición de la función \texttt{sys\_date()}.
+
+\subsubsection{xv6/sysproc.c}
+\begin{listing}
+@@ -92,1 +92,9 @@ int
++   int
++   sys_date(void)
++   {
++       struct rtcdate *d;
++       if(argptr(0, (void **) &d, sizeof(struct rtcdate)) < 0)
++           return -1;
++       cmostime(d);
++       return 0;
++   }
+\end{listing}
+\par Añadimos la función \texttt{sys\_date()} con su implementación en \texttt{sysproc.c}
+donde se implementan las llamadas al sistema que se realizan en \texttt{syscall()}.
 
 \subsection{Fichero de prueba}
+\subsubsection{xv6/date.c}
+\begin{listing}
+@@ +1,19 @@
++   #include "types.h"
++   #include "user.h"
++   #include "date.h"
++
++   int 
++   main(int argc, char *argv[])
++   {
++       struct rtcdate r;
++       if(date(&r))
++       {
++           printf(2, "date failed\n");
++           exit(0);
++       }
++       // Codigo para imprimir la fecha
++       printf(1, "Chiquillo, vaya cabeza que tienes. Hoy estamos a %d/%d/%d\n", r.day, r.month, r.year);
++       exit(0);
++   }
+\end{listing}
+\par Creamos un programa de usuario que llama a nuestra nueva llamada al sistema \texttt{date()}.
+
+\subsubsection{xv6/Makefile}
+\begin{listing}
+@@ -185,2 +185,3 @@ UPROGS=\
+    _wc\
+    _zombie\
++   _date\
+\end{listing}
+\par Para que nuestro programa esté disponible en el shell de \texttt{xv6}, insertamos 
+\texttt{\_date} a la definición \texttt{UPROGS} en el \texttt{Makefile}.
 
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ date
-    pid 70 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 70 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
     Chiquillo, vaya cabeza que tienes. Hoy estamos a 21/12/2021
     Output code: 0
 \end{listing}
