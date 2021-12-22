@@ -1,3 +1,4 @@
+%%%%%%%%%%%%%%%%%%%%%% LLAMADAS AL SISTEMA - EJERCICIO 3 %%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicio 3}
 \subsection{Enunciado}
 \begin{ejer}
@@ -5,10 +6,182 @@
     funciones de \texttt{POSIX}, es decir: \texttt{int wait(int* status)} y \texttt{void exit(int status)}.
 \end{ejer}
 \subsection{Desarrollo}
-\begin{listing}
-@@
+
+\subsubsection{shell}
+\begin{listing}[style=consola]
+alumno@alumno xv6 % sed -i e 's/\bexit()/exit(0)g' @(!(sysproc.c|trap.c)|(*.c))
+alumno@alumno xv6 % sed -i e 's/\bwait()/wait(0)g' @(!(sysproc.c|trap.c)|(*.c))
 \end{listing}
+\par Para que el sistema siga funcionando, hay que cambiar las llamadas a \texttt{exit} 
+y \texttt{wait} que hay a lo largo del sistema operativo para que acepten un parámetro.
+
+\subsubsection{xv6/user.h}
+\begin{listing}
+@@ -1,3 +1,8 @@
++   #define WIFEXITED(status)   (((status) & 0x7f) == 0)
++   #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
++   #define WIFSIGNALED(status) (((status) & 0x7f) != 0)
++   #define WEXITTRAP(status)   (((status) & 0x7f)-1)
+    struct stat;
+    struct rtcdate;
+// system calls
+    extern int fork(void);
+-   extern int exit(void) __attribute__((noreturn));
++   extern int exit(int) __attribute__((noreturn));
+-   extern int wait(void);
++   extern int wait(int*);
+\end{listing}
+\par Añadimos las macros definidas en \texttt{POSIX} y las funciones 
+de llamada al sistema ahora aceptan los argumentos.
+
+\subsubsection{xv6/defs.h}
+\begin{listing}
+@@ -104,3 +104,3 @@
+//PAGEBREAK: 16
+// proc.c
+    int             cpuid(void);
+-   void            exit(void);
++   void            exit(int);
+@@ -119,3 +119,3 @@
+    void            userinit(void);
+-   int             wait(void);
++   int             wait(int*);
+    void            wakeup(void*);
+\end{listing}
+
+\subsubsection{xv6/sysproc.c}
+\begin{listing}
+    int
+    sys_exit(void)
+    {
++       int exit_status;
++       if(argint(0, &exit_status) < 0)
++           return -1;
+-       exit();
++       exit(exit_status);
+        return 0;  // not reached
+    }
+    int
+    sys_wait(void)
+    {
+        int *exit_status;
+        if(argptr(0, (void**)&exit_status, sizeof(exit_status)) < 0)
+            return -1;
+-       return wait();
++       return wait(exit_status);
+    }
+\end{listing}
+\par Adaptamos las funciones de implementación de las llamadas dentro del núcleo, \\
+\texttt{sys\_exit()} y \texttt{sys\_wait()} para que acepten un entero (el estado 
+de salida del proceso) y un puntero a enteros.
+
+\subsubsection{xv6/proc.h}
+\begin{listing}
+@@ -48,5 +48,6 @@ struct proc {
+        int killed;                  // If non-zero, have been killed
+        struct file *ofile[NOFILE];  // Open files
+        struct inode *cwd;           // Current directory
+        char name[16];               // Process name (debugging)
++       int exit_status;             // Estatus de salida
+    };
+\end{listing}
+\par Para poder guardar el código de salida del proceso tuvimos que añadir otro campo a la estructura \texttt{struct proc}.
+
+\subsubsection{xv6/proc.c}
+\begin{listing}
+@@ -227,7 +227,7 @@ exit(int exit_satus)
+    void
+-   exit()
++   exit(int exit_status)
+    {
+        struct proc *curproc = myproc();
+        struct proc *p;
+@@ -241,7 +241,13 @@ exit(int exit_satus)
++       if (curproc->killed)
++            curproc->exit_status = exit_status+1;
++       else { // salida normal
++            curproc->exit_status = exit_status << 8;
++       }
+        begin_op();
+        iput(curproc->cwd);
+        end_op();
+@@ -276,7 +281,7 @@ wait(int *exit_status)
+    int
+-   wait()
++   wait(int *exit_status)
+    {
+@@ -292,8 +297,7 @@ wait(int *exit_status)
+        pid = p->pid;
++       *exit_status = p->exit_status;
+        kfree(p->kstack);
+        p->kstack = 0;
+@@ -303,6 +307,7 @@ wait(int *exit_status)
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
++       p->exit_status = 0;
+        release(&ptable.lock);
+        return pid;
+    }
+\end{listing}
+
+\subsubsection{xv6/sh.c}
+\begin{listing}
+@@ -167,7 +167,9 @@ main(void)
+        }
+        if(fork1() == 0)
+        runcmd(parsecmd(buf));
+-       wait(0);
++       int exit_status;
++       wait(&exit_status);
++       if (WIFEXITED (exit_status))
++           printf (1, "Output code: %d\n", WEXITSTATUS (exit_status));
++       else if (WIFSIGNALED(exit_status))
++           printf (1, "Output code: %d\n", WEXITTRAP (exit_status));
+    }
+    exit(0);
+}
+\end{listing}
+\par Modificamos la llamada al sistema \texttt{wait()} para que cada vez que 
+ejecute un programa produzca el código de salida correspondiente.
+
+\subsubsection{xv6/trap.c}
+\begin{listing}
+@@ -38,11 +38,11 @@ trap(struct trapframe *tf)
+    {
+    if(tf->trapno == T_SYSCALL){
+        if(myproc()->killed)
+-           exit();
++           exit(tf->trapno);
+        myproc()->tf = tf;
+        syscall();
+        if(myproc()->killed)
+-           exit();
++           exit(tf->trapno);
+        return;
+    }
+@@ -100,7 +100,7 @@ trap(struct trapframe *tf)
+        if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
+-           exit();
++           exit(tf->trapno);
+@@ -110,5 +110,5 @@ trap(struct trapframe *tf)
+        if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
+-           exit();
++           exit(tf->trapno);
+\end{listing}
+
 \subsection{Fichero de prueba}
+\subsubsection{xv6/Makefile}
+\begin{listing}
+@@ -185,5 +185,6 @@ UPROGS=\
+    _wc\
+    _zombie\
+    _date\
+    _clear\
+    _dup2test\
++   _exitwait\
+\end{listing}
+
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ exitwait
