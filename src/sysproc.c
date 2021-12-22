@@ -92,11 +92,15 @@ sys_freemem (void)
   {
     return -1;
   }
-  if(type == 0)
-  {
+  
+  if(type == F_PAGES){
     return getNumFreePages();
+  }else if(type == F_BYTES){
+    return (getNumFreePages()*PGSIZE);  
   }
-  return (getNumFreePages()*PGSIZE);
+
+  return -1;
+  
 }
 
 int

@@ -192,3 +192,6 @@ int             mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
 
 #define NULL 0
+
+#define F_PAGES 0
+#define F_BYTES 1
