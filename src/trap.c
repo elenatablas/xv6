@@ -36,6 +36,8 @@ idtinit(void)
 void
 trap(struct trapframe *tf)
 {
+
+
   if(tf->trapno == T_SYSCALL){
     if(myproc()->killed)
       exit(tf->trapno);
@@ -48,6 +50,7 @@ trap(struct trapframe *tf)
 
   switch(tf->trapno){
   case T_IRQ0 + IRQ_TIMER:
+
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
@@ -61,6 +64,7 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
   case T_IRQ0 + IRQ_IDE+1:
+
     // Bochs generates spurious IDE1 interrupts.
     break;
   case T_IRQ0 + IRQ_KBD:
@@ -68,6 +72,7 @@ trap(struct trapframe *tf)
     lapiceoi();
     break;
   case T_IRQ0 + IRQ_COM1:
+
     uartintr();
     lapiceoi();
     break;
@@ -110,6 +115,7 @@ trap(struct trapframe *tf)
   }
   //PAGEBREAK: 13
   default:
+
     if(myproc() == 0 || (tf->cs&3) ==0){
     // In user space, assume process misbehaved.
     cprintf("pid %d %s: trap %d err %d on cpu %d "
@@ -128,6 +134,8 @@ trap(struct trapframe *tf)
             tf->err, cpuid(), tf->eip, rcr2());
     myproc()->killed = 1;
   }
+
+
 
   // Force process exit if it has been killed and is in user space.
   // (If it is still executing in the kernel, let it keep running

@@ -71,6 +71,7 @@ sys_sbrk(void)
     {
       return -1;
     }
+
     if((curproc->sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)
       return -1;
   }

@@ -63,9 +63,10 @@ exec(char *path, char **argv)
   // Allocate two pages at the next page boundary. // 2*PGSIZE antes
   // Make the first inaccessible.  Use the second as the user stack.
   sz = PGROUNDUP(sz);
-  if((sz = allocuvm(pgdir, sz, sz + (sz+PGSIZE))) == 0)
+  uint sz_cod_datos = sz + PGSIZE;
+  if((sz = allocuvm(pgdir, sz, sz + sz_cod_datos)) == 0)
     goto bad;
-  clearpteu(pgdir, (char*)(sz - (sz+PGSIZE)));
+  clearpteu(pgdir, (char*)(sz - sz_cod_datos));
   sp = sz;
 
   curproc->heap = sp;
