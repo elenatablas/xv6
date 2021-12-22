@@ -24,6 +24,7 @@ struct {
   int num_free;
 } kmem;
 
+
 // Initialization happens in two phases.
 // 1. main() calls kinit1() while still using entrypgdir to place just
 // the pages mapped by entrypgdir on free list.
@@ -34,12 +35,16 @@ kinit1(void *vstart, void *vend)
 {
   initlock(&kmem.lock, "kmem");
   kmem.use_lock = 0;
+  kmem.num_free = 0; //Inicializamos kmem.num_free al principio
+
   freerange(vstart, vend);
 }
 
 void
 kinit2(void *vstart, void *vend)
 {
+    cprintf("Llamando a kinit2\n");
+
   freerange(vstart, vend);
   kmem.use_lock = 1;
 }
