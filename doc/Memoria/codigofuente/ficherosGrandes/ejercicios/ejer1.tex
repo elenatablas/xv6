@@ -6,6 +6,17 @@
     implementar el doblemente indirecto.
 \end{ejer}
 \subsection{Desarrollo}
+\subsubsection{xv6/param.h}
+
+\begin{listing}
+@@ -10,5 +10,5 @@
+    #define MAXOPBLOCKS  10  // max # of blocks any FS op writes
+    #define LOGSIZE      (MAXOPBLOCKS*3)  // max data blocks in on-disk log
+    #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
+-   #define FSSIZE 1000 // size of file system in blocks
++   #define FSSIZE 20000 
+\end{listing}
+
 \subsubsection{xv6/file.h}
 \begin{listing}
 @@ -22,7 +22,7 @@ struct inode {
@@ -17,7 +28,7 @@
   };
 \end{listing}
 
-\subsubsection{xv6/fs.h }
+\subsubsection{xv6/fs.h}
 \begin{listing}
 @@ -21,9 +21,10 @@ struct superblock {
 -   #define NDIRECT 12
@@ -33,16 +44,6 @@
 -   uint addrs[NDIRECT+1];
 +   uint addrs[NDIRECT+1+1]; // Data block addresses (Directos + BSI + BDI)
   };
-\end{listing}
-
-\subsubsection{xv6/param.h}
-\begin{listing}
-@@ -10,5 +10,5 @@
-    #define MAXOPBLOCKS  10  // max # of blocks any FS op writes
-    #define LOGSIZE      (MAXOPBLOCKS*3)  // max data blocks in on-disk log
-    #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
--   #define FSSIZE 1000 // size of file system in blocks
-+   #define FSSIZE 20000 
 \end{listing}
 
 \subsubsection{xv6/fs.c}
@@ -96,8 +97,8 @@
     _tsbrk5\
     _tfreem\
 +   _big\
-  };
 \end{listing}
+
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     Booting from Hard Disk...
