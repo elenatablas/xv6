@@ -1,92 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%% SISTEMA DE MEMORIA - EJERCICIO 1 %%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicio 1}
+
 \subsection{Enunciado}
 \begin{ejer}
-    \textbf{1.[trap]} Implementa la característica de reserva diferida en \texttt{xv6}.
+    \textbf{1.[sbrk()]} Implementa la característica de reserva diferida en \texttt{xv6}.
 \end{ejer}
 \subsection{Desarrollo}
+\subsubsection{xv6/sysproc.c}
 \begin{listing}
-@@
+@@ -57,10 +57,11 @@ sys_sbrk(void)
+    if(argint(0, &n) < 0)
+        return -1;
+-   if(growproc(n) < 0)
+-      return -1;
++   addr = myproc()->sz +=n;
++   myproc()->sz += n;
+    return addr;
+}
 \end{listing}
-\subsection{Ficheros de prueba}
+\par Elimina la reserva de páginas de la llamada al sistema \texttt{sbrk()}, 
+implementada a través de la función \texttt{sys\_sbrk()} en \texttt{sysproc.c}.
+\par No llama a \texttt{growproc()} en caso de que el proceso crezca e incrementa el tamaño del proceso \texttt{myproc()->sz}.
+Devuelve el tamaño antiguo, pero no reserva memoria.
 
-\subsubsection{Salida del fichero prueba}
-\begin{listing}[style=consola]
-    $ tsbrk1
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    pid 3 tsbrk1: trap 14 err 6 on cpu 0 eip 0x23 addr 0x31f4--kill proc
-    pid 3 tsbrk1: trap 14 err 4 on cpu 0 eip 0xb9 addr 0x31f4--kill proc
-    Debe imprimir 1: 1.
-    Output code: 0
+\subsubsection{xv6/trap.c}
+\begin{listing}
+@@ -77,10 +77,39 @@ trap(struct trapframe *tf)
+    case T_IRQ0 + IRQ_SPURIOUS:
+        cprintf("cpu%d: spurious interrupt at %x:%x\n",
+                cpuid(), tf->cs, tf->eip);
+        lapiceoi();
+        break;
++   case T_PGFLT:
++   {
++       pde_t *pgdir = myproc()->pgdir;
++       int oldsz = rcr2();
++       int newsz = oldsz+PGSIZE;
++       uint a = PGROUNDDOWN(oldsz); 
++       void *mem = kalloc();
++       if(mem == 0){
++           cprintf("allocuvm out of memory\n");
++           deallocuvm(pgdir, newsz, oldsz);
++           break;
++       }
++       memset(mem, 0, PGSIZE);
++       if(mappages(pgdir, (char*)a, PGSIZE, V2P(mem), PTE_W|PTE_U) < 0){
++           cprintf("allocuvm out of memory (2)\n");
++           deallocuvm(pgdir, newsz, oldsz);
++           kfree(mem);
++           break;
++       }
++       cprintf("pid %d %s: trap %d err %d on cpu %d "
++               "eip 0x%x addr 0x%x--kill proc\n",
++               myproc()->pid, myproc()->name, tf->trapno,
++               tf->err, cpuid(), tf->eip, rcr2());
++       break;
++   }
+    //PAGEBREAK: 13
+    default:
+        if(myproc() == 0 || (tf->cs&3) ==0){
+        // In user space, assume process misbehaved.
+        cprintf("pid %d %s: trap %d err %d on cpu %d "
+                "eip 0x%x addr 0x%x--kill proc\n",
+                myproc()->pid, myproc()->name, tf->trapno,
+                tf->err, cpuid(), tf->eip, rcr2());
+        // In kernel, it must be our mistake.
+        cprintf("unexpected trap %d from cpu %d eip %x (cr2=0x%x)\n",
+                tf->trapno, cpuid(), tf->eip, rcr2());
 \end{listing}
-\begin{listing}[style=consola]
-    $ tsbrk2
-    pid 4 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 4 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    .........................................................................................c
-    Output code: 14
+\par Modificamos el código en \texttt{trap.c} para responder a un fallo de página en 
+el espacio de usuario mapeando una nueva página física en la dirección que generó el fallo,
+regresando después al espacio de usuario para que continue.
+\subsubsection{xv6/vm.c}
+\begin{listing}
+@@ -60,7 +60,7 @@ int
+-   static int
++   int
+    mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm)
+    {
+        char *a, *last;
 \end{listing}
+\par Borramos la declaración de función estática en \texttt{vm.c} para poder utilizarla en el 
+fichero \texttt{trap.c}.
+\subsection{Pruebas}
+\subsubsection{Comando \texttt{echo}}
 \begin{listing}[style=consola]
-    $ tsbrk3
-    pid 5 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 5 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    pid 5 tsbrk3: trap 14 err 2 on cpu 0 eip 0x8010404f addr 0x5000--kill proc
-    Debe imprimir los 50 primeros caracteres de README:
-    xv6 is a re-implementation of Dennis Ritchie's and
-    Output code: 0
+    $ 
 \end{listing}
+\subsubsection{Comando \texttt{ls}}
 \begin{listing}[style=consola]
-    $ tsbrk4
-    pid 6 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 6 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    pid 6 tsbrk4: trap 14 err 6 on cpu 0 eip 0x28 addr 0x31f4--kill proc
-    pid 6 tsbrk4: trap 14 err 4 on cpu 0 eip 0xbe addr 0x31f4--kill proc
-    Debe imprimir 1: 1.
-    pid 7 tsbrk4: trap 14 err 6 on cpu 0 eip 0x28 addr 0x31f4--kill proc
-    pid 7 tsbrk4: trap 14 err 4 on cpu 0 eip 0xbe addr 0x31f4--kill proc
-    Debe imprimir 1: 1.
-    pid 7 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    pid 7 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    Debe imprimir 1: pid 8 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    pid 8 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    Debe imprimir 1: 1.
-    pid 6 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    1pid 9 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    pid 9 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    pid 6 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    .
-    DeDebe impribe impzombie!
-    mir 1:rimir 1: 1.
-    1.
-    zombie!
-    Output code: 0
-    zombie!
+    $ 
 \end{listing}
-\begin{listing}[style=consola]
-    $ tsbrk5
-    pid 10 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 10 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    Este programa primero intenta acceder mas alla de sz.
-    Debe fallar ahora:
-    pid 10 tsbrk5: trap 14 err 6 on cpu 0 eip 0x23 addr 0x3001--kill proc
-    Output code: 14
-\end{listing}
-\begin{listing}[style=consola]
-    $ tsbrk5
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    Este programa primero intenta acceder mas alla de sz.
-    Si no fallo antes (mal), ahora tambien debe fallar:
-    6687
-    Output code: 0
-\end{listing}
-\begin{listing}[style=consola]
-    $ tsbrk5
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    Este programa primero intenta acceder mas alla de sz.
-    Si no fallo antes (mal), ahora tambien debe fallar:
-    pid 3 tsbrk5: trap 14 err 7 on cpu 0 eip 0x7b addr 0x80000002--kill proc
-    Output code: 14
-\end{listing}
-

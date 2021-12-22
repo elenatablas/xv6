@@ -1,17 +1,49 @@
+%%%%%%%%%%%%%%%%%%%%%% SISTEMA DE MEMORIA - EJERCICIO 3 %%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicio 3}
+
 \subsection{Enunciado}
 \begin{ejer}
     \textbf{3.[exec()]} Modifica el código de la función \texttt{exec()} para que asigne 
     a cada proceso un número de páginas de pila igual al número de páginas de \texttt{código+datos} 
     de ese proceso. Compruebe que las anteriores modificaciones siguen funcionando.
 \end{ejer}
-\subsection{Desarrollo}
-\begin{listing}
-@@
-\end{listing}
-\subsection{Ficheros de prueba}
 
-\subsubsection{Salida del fichero prueba}
-\begin{listing}[style=consola]
-$:
+\subsection{Desarrollo}
+
+\subsubsection{xv6/exec.c}
+\begin{listing}
+@@ -68,6 +68,8 @@ exec(char *path, char **argv)
+    sz = PGROUNDUP(sz);
+-   if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)    
++   if((sz = allocuvm(pgdir, sz, sz + (sz+PGSIZE))) == 0)
+        goto bad;
+-   clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
++   clearpteu(pgdir, (char*)(sz - sz*PGSIZE));
+    sp = sz;
++   curproc->heap = sp;
+\end{listing}
+
+\subsubsection{xv6/proc.h}
+\begin{listing}
+@@ -50,6 +50,7 @@ struct proc {
+        struct inode *cwd;           // Current directory
+        char name[16];               // Process name (debugging)
+        int exit_status;             // Estatus de salida
++       uint heap;   
+    };
+\end{listing}
+
+\subsubsection{xv6/sysproc.c}
+\begin{listing}
+@@ -70,22 +70,25 @@ sys_sbrk(void)
+    else // argumento negativo
+    {
+        if((curproc->sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)
+            return -1;
++       if(sz+n < myproc()->heap)
++       {
++           return -1;
++       }
+    }
+    lcr3(V2P(curproc->pgdir));  // Invalidate TLB.
 \end{listing}

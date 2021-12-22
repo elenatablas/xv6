@@ -1,9 +1,12 @@
+%%%%%%%%%%%%%%%%%%%%%% SISTEMA DE MEMORIA - EJERCICIO 4 %%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicio 4}
+
 \subsection{Enunciado}
 \begin{ejer}
     \textbf{4.[freemem()]} Añade una llamada al sistema \texttt{freemem} con la siguiente 
     signatura: \texttt{int freemem(int type)}.
 \end{ejer}
+
 \subsection{Desarrollo}
 
 \subsubsection{xv6/syscall.h}
@@ -128,6 +131,7 @@
     _tsbrk5\
 +   _tfreem\
 \end{listing}
+
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ tfreem
