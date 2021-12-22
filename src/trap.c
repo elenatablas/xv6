@@ -91,7 +91,6 @@ trap(struct trapframe *tf)
       int oldsz = rcr2();
       int newsz = oldsz+PGSIZE;
 
-      //uint a = PGROUNDUP(oldsz);
       uint a = PGROUNDDOWN(oldsz); // ES DOWN porque mapeas la página que te ha dado error 
       void *mem = kalloc();
       if(mem == 0){
@@ -106,10 +105,12 @@ trap(struct trapframe *tf)
         kfree(mem);
         break;
       }
+      /* Para saber los fallos de página
       cprintf("pid %d %s: trap %d err %d on cpu %d "
               "eip 0x%x addr 0x%x--kill proc\n",
               myproc()->pid, myproc()->name, tf->trapno,
               tf->err, cpuid(), tf->eip, rcr2());
+      */
       break;
     }
   }
