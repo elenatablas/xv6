@@ -67,11 +67,13 @@
 +       {
 +           return -1;
 +       }
-+       if(type == 0)
++       if(type == F_PAGES)
 +       {
 +           return getNumFreePages();
++       }else if(type == F_BYTES){
++           return (getNumFreePages()*PGSIZE);
 +       }
-+       return (getNumFreePages()*PGSIZE);
++       return -1;
 +   }
 \end{listing}
 
@@ -87,6 +89,10 @@
 // vm.c
     void clearpteu(pde_t *pgdir, char *uva);
 +   int mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
+@@ -194,1 +194,3 @@ 
+    #define NULL 0
++   #define F_PAGES 0
++   #define F_BYTES 1
 \end{listing}
 
 \subsubsection{xv6/kalloc.c}
@@ -97,6 +103,15 @@
     struct run *freelist;
 +   int num_free;
 } kmem;
+@@ -32,12 +32,16 @@ kinit1(void *vstart, void *vend)
+void
+kinit1(void *vstart, void *vend)
+{
+    initlock(&kmem.lock, "kmem");
+    kmem.use_lock = 0;
++   kmem.num_free = 0; //Inicializamos kmem.num_free al principio
+    freerange(vstart, vend);
+}
 @@ -72,6 +73,7 @@ kfree(char *v)
     r = (struct run*)v;
     r->next = kmem.freelist;
