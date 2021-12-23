@@ -14,11 +14,12 @@
 \begin{listing}
 @@ -68,6 +68,8 @@ exec(char *path, char **argv)
     sz = PGROUNDUP(sz);
++   uint sz_cod_datos = sz + PGSIZE;
 -   if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)    
-+   if((sz = allocuvm(pgdir, sz, sz + (sz+PGSIZE))) == 0)
++   if((sz = allocuvm(pgdir, sz, sz + sz_cod_datos)) == 0)
         goto bad;
 -   clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
-+   clearpteu(pgdir, (char*)(sz - sz*PGSIZE));
++   clearpteu(pgdir, (char*)(sz - sz_cod_datos));
     sp = sz;
 +   curproc->heap = sp;
 \end{listing}
