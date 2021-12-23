@@ -24,6 +24,14 @@
 +   curproc->heap = sp;
 \end{listing}
 
+\par Para hacer este ejercicio, lo único que tenemos que hacer es modificar
+dentro del \texttt{exec()} la forma en la que se va creando el mapa de memoria.
+\par En este caso, ajustamos el código para que cree las páginas de pila correspondientes
+a codigo más datos, que en este caso seria la varible \texttt{sz} que es la cantidad de datos que ya llevamos.
+\par A \texttt{sz} le añadimos tamaño de página \texttt{PGSIZE} para añadir la página de guarda.
+\par También utilizamos \texttt{clearpteu()} para proteger la página de guarda y que provoque
+una excepción al tratar de acceder a ella.
+
 \subsubsection{xv6/proc.h}
 \begin{listing}
 @@ -50,4 +50,5 @@ struct proc {
@@ -33,6 +41,7 @@
 +       uint heap;   
     };
 \end{listing}
+\par Para poder guardar el comienzo de la memoria del \texttt{heap} del proceso tuvimos que añadir otro campo a la estructura \texttt{struct proc}.
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
@@ -48,3 +57,5 @@
     }
     lcr3(V2P(curproc->pgdir));  // Invalidate TLB.
 \end{listing}
+
+\par Verificamos que no se libere memoria por debajo del \texttt{heap}.

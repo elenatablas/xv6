@@ -16,6 +16,7 @@
     #define SYS_dup2   23
 +   #define SYS_freemem 24
 \end{listing}
+\par Le damos un nuevo número a la llamada.
 
 \subsubsection{xv6/usys.S}
 \begin{listing}
@@ -25,6 +26,7 @@
     SYSCALL(dup2)
 +   SYSCALL(freemem)
 \end{listing}
+\par Añadimos la llamada \texttt{freemem}.
 
 \subsubsection{xv6/user.h}
 \begin{listing}
@@ -42,6 +44,14 @@
 +   extern int freemem(int);
 \end{listing}
 
+\par Definimos las constantes \texttt{F\_PAGES} y \texttt{F\_BYTES} que
+son usadas para solicitar a \texttt{freemem()} si deseamos el número de páginas de memoria física
+disponibles o el número de bytes de memoria física disponibles.
+
+\par Añadimos la llamada \texttt{freemem()} al fichero de definición de llamadas 
+al sistema para los programas de usuario.
+
+
 \subsubsection{xv6/syscall.c}
 \begin{listing}
 @@ -105,3 +105,4 @@
@@ -56,6 +66,7 @@
 +   [SYS_freemem] sys_freemem,
     };
 \end{listing}
+\par Añadimos la definición de la función \texttt{sys\_freemem()}.
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
@@ -77,6 +88,14 @@
 +       return -1;
 +   }
 \end{listing}
+\par Añadimos la función \texttt{sys\_freemem()} con su implementación en \texttt{sysproc.c}
+donde se implementan las llamadas al sistema que se realizan en \texttt{syscall()}.
+
+\par La llamada al sistema usa el método \texttt{getNumFreePages()} que
+devuelve el número de páginas físicas disponibles.
+
+\par En caso de que se desee obtener el número de bytes, multiplicamos el número de páginas físicas disponibles
+por el tamaño de página en bytes.
 
 \subsubsection{xv6/defs.h}
 \begin{listing}
@@ -95,6 +114,10 @@
 +   #define F_PAGES 0
 +   #define F_BYTES 1
 \end{listing}
+
+\par Aquí, al igual que en \texttt{xv6/user.h} definimos las constantes
+\texttt{F\_PAGES} y \texttt{F\_BYTES} para poder utilizarlas en el código
+del sistema operativo.
 
 \subsubsection{xv6/kalloc.c}
 \begin{listing}
@@ -139,6 +162,14 @@ kinit1(void *vstart, void *vend)
 +   }
 \end{listing}
 
+\par Creamos en la estructura \texttt{kmem} el atributo \texttt{num\_free}
+que es un contador de número de páginas físicas disponibles.
+
+\par Es inicializado en el método \texttt{kinit1()} y actualiza su valor
+en el método \texttt{kalloc()} y \texttt{kfree()}.
+
+\par Por último, usamos el método \texttt{getNumFreePages()} para poder 
+obtener el valor de \texttt{num\_free}.
 
 \subsection{Ficheros de prueba}
 \begin{listing}
@@ -147,6 +178,8 @@ kinit1(void *vstart, void *vend)
     _tsbrk5\
 +   _tfreem\
 \end{listing}
+\par Para que nuestro programa esté disponible en el shell de \texttt{xv6}, insertamos 
+\texttt{\_tfreem} a la definición \texttt{UPROGS} en el \texttt{Makefile}.
 
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]

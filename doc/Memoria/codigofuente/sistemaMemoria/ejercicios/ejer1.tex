@@ -61,6 +61,10 @@ Devuelve el tamaño antiguo, pero no reserva memoria.
 \par Modificamos el código en \texttt{trap.c} para responder a un fallo de página en 
 el espacio de usuario mapeando una nueva página física en la dirección que generó el fallo,
 regresando después al espacio de usuario para que continue.
+\par En \texttt{rcr2()} se encuentra la dirección que ha provocado el fallo de página y
+tenemos que mapear.
+\par La implementación hace uso de \texttt{PGROUNDDOWN(oldsz)} para alinear las direcciones
+de memoria al inicio de la página que corresponda.
 \subsubsection{xv6/vm.c}
 \begin{listing}
 @@ -60,4 +60,4 @@ int
@@ -72,6 +76,7 @@ regresando después al espacio de usuario para que continue.
 \end{listing}
 \par Borramos la declaración de función estática en \texttt{vm.c} para poder utilizarla en el 
 fichero \texttt{trap.c}.
+
 \subsection{Pruebas}
 \subsubsection{Comando \texttt{echo}}
 \begin{listing}[style=consola]

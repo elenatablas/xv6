@@ -22,6 +22,9 @@
 +       if (!(tf->err & 1) && !(rcr2() > myproc()->sz)) { 
 \end{listing}
 
+\par La primera parte de la condición sirve para filtrar aquellos fallos de página
+que contengan errores. La segunda maneja el caso de fallos en la página inválida debajo de la pila.
+
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
 @@ -52,13 +52,22 @@ sys_sbrk(void)
@@ -55,11 +58,11 @@
 +       return sz; // retornamos el anterior tam
     }
 \end{listing}
-\par Añadimos el caso de un argumento negativo al llamarse a \texttt{sbrk()}
-\par Manejar el caso de fallos en la página inválida debajo de la pila.
-\par Asegurarse de que funciona el uso por parte del kernel de páginas de 
-usuario que todavía no han sido reservadas (p.e. si un programa pasa una dirección 
-de la zona de usuario todavía no reservada a \texttt{read()}).
+\par Añadimos el caso de un argumento negativo al llamarse a \texttt{sbrk()}.
+\par En el caso de que se intente aumentar el tamaño, simplemente
+actualizamos el valor del tamaño del proceso actual.
+\par En el caso de que se reduzca, también se deberá liberar las páginas
+correspondientes.
 
 \subsubsection{xv6/vm.c}
 \begin{listing}
@@ -105,6 +108,9 @@ haya direcciones virtuales sin memoria reservada para ellas.
     Output code: 14
 \end{listing}
 
+\par Este test es un bucle infinito que provoca que se llene la pila. Por
+eso, debe de saltar la excepción correspondiente.
+
 \begin{listing}[style=consola]
     $ tsbrk3
     Debe imprimir los 50 primeros caracteres de README:
@@ -127,7 +133,7 @@ haya direcciones virtuales sin memoria reservada para ellas.
 
     Output code: 0
 \end{listing}
-
+\par El test \texttt{tsbrk5} está formado por 3 distintos.
 \par \texttt{test1();}
 \begin{listing}[style=consola]
     $ tsbrk5
