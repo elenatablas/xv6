@@ -7,7 +7,92 @@ para usarla (usa como ejemplo la implementación de la llamada al sistema \textt
 debe de comportarse \texttt{dup2()} según el estándar \texttt{POSIX}).
 \end{ejer}
 \subsection{Desarrollo}
+\subsubsection{xv6/syscall.h}
+\begin{listing}
+@@ -21,3 +21,4 @@
+    #define SYS_mkdir  20
+    #define SYS_close  21
+    #define SYS_date   22
++   #define SYS_dup2   23
+\end{listing}
+\par Le damos un nuevo número a la llamada.
 
+\subsubsection{xv6/usys.S}
+\begin{listing}
+@@ -29,4 +29,5 @@
+    SYSCALL(sbrk)
+    SYSCALL(sleep)
+    SYSCALL(uptime)
+    SYSCALL(date)
++   SYSCALL(dup2)
+\end{listing}
+\par Añadimos la llamada \texttt{dup2}.
+
+\subsubsection{xv6/user.h}
+\begin{listing}
+@@ -21,7 +21,8 @@ 
+// system calls
+    extern int dup(int);
+    extern int getpid(void);
+    extern char* sbrk(int);
+    extern int sleep(int);
+    extern int uptime(void);
+    extern int date(struct rtcdate*);
++   extern int dup2(int, int);
+\end{listing}
+\par Añadimos la llamada \texttt{dup2()} al fichero de definición de llamadas 
+al sistema para los programas de usuario.
+
+\subsubsection{xv6/syscall.c}
+\begin{listing}
+@@ -103,3 +103,4 @@
+    extern int sys_write(void);
+    extern int sys_uptime(void);
+    extern int sys_date(void);
++   extern int sys_dup2(void);
+@@ -127,3 +127,4 @@ static int (*syscalls[])(void) = {
+    [SYS_mkdir]   sys_mkdir,
+    [SYS_close]   sys_close,
+    [SYS_date]    sys_date,
++   [SYS_dup2]    sys_dup2,
+    };
+\end{listing}
+\par Añadimos la definición de la función \texttt{sys\_dup2()}.
+
+\subsubsection{xv6/sysfile.c}
+\begin{listing}
+@@ -55,1 +55,29 @@ int sys_dup2(void)
++   int
++   sys_dup2(void)
++   {
++       struct file *f;
++       struct file *fbasura;
++       int oldfd, newfd;
++       // comprueba que f este abierto, f = fichero abierto.
++       if(argfd(0, &oldfd, &f) < 0)
++           return -1; // Siempre abierto sino fallo
++       // Obtenemos el segundo argumento, newfd = arg[1];
++       // No hace falta comprobar que esta abierto. Da igual abierto o cerrado
++       if(argint(1, &newfd) < 0)
++           return -1;
++       if(oldfd == newfd)
++           return newfd;
++
++       // Primer fd cerrado y colocar f en ese descriptor
++       if(newfd < 0 || newfd >= NOFILE)
++           return -1;
++       // Fichero anterior porque estaba abierto
++       if((fbasura= myproc()->ofile[newfd]) != 0)
++       {
++           myproc()->ofile[newfd] = 0;
++           fileclose(fbasura);
++       }
++       myproc()->ofile[newfd] = myproc()->ofile[oldfd];
++       // Sumarle uno a la tabla de ficheros del sistema
++       filedup(f);
++       return newfd;
++   }
+\end{listing}
 
 \subsection{Fichero de prueba}
 \subsubsection{xv6/Makefile}
