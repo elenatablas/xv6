@@ -43,8 +43,6 @@ kinit1(void *vstart, void *vend)
 void
 kinit2(void *vstart, void *vend)
 {
-    cprintf("Llamando a kinit2\n");
-
   freerange(vstart, vend);
   kmem.use_lock = 1;
 }
