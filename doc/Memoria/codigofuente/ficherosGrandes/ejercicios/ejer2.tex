@@ -45,3 +45,20 @@ itrunc(struct inode *ip)
     iupdate(ip);
 }
 \end{listing}
+\subsubsection{Salida del fichero prueba}
+\begin{listing}[style=consola]
+    $ big
+    .........................................................................................
+    .......................................................................
+    wrote 16523 sectors
+    done; ok
+    Output code: 0
+    $ rm big.file
+    Output code: 0
+    $ big
+    .........................................................................................
+    .......................................................................
+    wrote 16523 sectors
+    done; ok
+    Output code: 0
+\end{listing}

@@ -1,3 +1,4 @@
+%%%%%%%%%%%%%%%%%%%%%% LLAMADAS AL SISTEMA - EJERCICIO 2 %%%%%%%%%%%%%%%%%%%%%%
 \section{Ejercicio 2}
 \subsection{Enunciado}
 \begin{ejer}
@@ -6,16 +7,21 @@ para usarla (usa como ejemplo la implementación de la llamada al sistema \textt
 debe de comportarse \texttt{dup2()} según el estándar \texttt{POSIX}).
 \end{ejer}
 \subsection{Desarrollo}
-\begin{listing}
-@@
-\end{listing}
-\subsection{Fichero de prueba}
 
+
+\subsection{Fichero de prueba}
+\subsubsection{xv6/Makefile}
+\begin{listing}
+@@ -185,4 +185,5 @@ UPROGS=\
+    _wc\
+    _zombie\
+    _date\
+    _clear\
++   _dup2test\
+\end{listing}
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ dup2test
-    pid 69 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 69 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
     Este mensaje debe salir por terminal.
     Este mensaje debe salir por terminal (2).
     Este mensaje debe salir por terminal (3).

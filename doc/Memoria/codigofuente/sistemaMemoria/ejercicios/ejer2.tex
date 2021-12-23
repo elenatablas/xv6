@@ -93,78 +93,57 @@ haya direcciones virtuales sin memoria reservada para ellas.
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ tsbrk1
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    pid 3 tsbrk1: trap 14 err 6 on cpu 0 eip 0x23 addr 0x31f4--kill proc
-    pid 3 tsbrk1: trap 14 err 4 on cpu 0 eip 0xb9 addr 0x31f4--kill proc
     Debe imprimir 1: 1.
     Output code: 0
 \end{listing}
 \begin{listing}[style=consola]
     $ tsbrk2
-    pid 4 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 4 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    .........................................................................................c
+    ..........................................................................................
+    .............................................................................pid 3 tsbrk2:
+     trap 14 err 7 on cpu 0 eip 0x30a addr 0x2ffc--kill proc
     Output code: 14
 \end{listing}
 \begin{listing}[style=consola]
     $ tsbrk3
-    pid 5 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 5 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    pid 5 tsbrk3: trap 14 err 2 on cpu 0 eip 0x8010404f addr 0x5000--kill proc
     Debe imprimir los 50 primeros caracteres de README:
     xv6 is a re-implementation of Dennis Ritchie's and
     Output code: 0
 \end{listing}
 \begin{listing}[style=consola]
     $ tsbrk4
-    pid 6 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 6 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
-    pid 6 tsbrk4: trap 14 err 6 on cpu 0 eip 0x28 addr 0x31f4--kill proc
-    pid 6 tsbrk4: trap 14 err 4 on cpu 0 eip 0xbe addr 0x31f4--kill proc
     Debe imprimir 1: 1.
-    pid 7 tsbrk4: trap 14 err 6 on cpu 0 eip 0x28 addr 0x31f4--kill proc
-    pid 7 tsbrk4: trap 14 err 4 on cpu 0 eip 0xbe addr 0x31f4--kill proc
     Debe imprimir 1: 1.
-    pid 7 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    pid 7 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    Debe imprimir 1: pid 8 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    pid 8 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
     Debe imprimir 1: 1.
-    pid 6 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    1pid 9 tsbrk4: trap 14 err 6 on cpu 0 eip 0x100 addr 0x4b3000--kill proc
-    pid 9 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    pid 6 tsbrk4: trap 14 err 4 on cpu 0 eip 0x11f addr 0x4b3000--kill proc
-    .
-    DeDebe impribe impzombie!
-    mir 1:rimir 1: 1.
+    Debe imprimir 1: Output code: 0
+    $Debe imprimir 1: 1.
     1.
+    Debe imprimir 1: 1.
     zombie!
+    zombie!
+    zombie!
+
     Output code: 0
-    zombie!
 \end{listing}
+\par \texttt{test1();}
 \begin{listing}[style=consola]
     $ tsbrk5
-    pid 10 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 10 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
     Este programa primero intenta acceder mas alla de sz.
     Debe fallar ahora:
-    pid 10 tsbrk5: trap 14 err 6 on cpu 0 eip 0x23 addr 0x3001--kill proc
+    pid 3 tsbrk5: trap 14 err 6 on cpu 0 eip 0x23 addr 0x3001--kill proc
     Output code: 14
 \end{listing}
+\par \texttt{test2();}
 \begin{listing}[style=consola]
     $ tsbrk5
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
     Este programa primero intenta acceder mas alla de sz.
     Si no fallo antes (mal), ahora tambien debe fallar:
     6687
-    Output code: 0
+    pid 83 tsbrk5: trap 14 err 7 on cpu 0 eip 0x59 addr 0x1a1f--kill proc
+    Output code: 14
 \end{listing}
+\par \texttt{test3();}
 \begin{listing}[style=consola]
     $ tsbrk5
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0xfa5 addr 0x5004--kill proc
-    pid 3 sh: trap 14 err 6 on cpu 0 eip 0x101c addr 0xcfa4--kill proc
     Este programa primero intenta acceder mas alla de sz.
     Si no fallo antes (mal), ahora tambien debe fallar:
     pid 3 tsbrk5: trap 14 err 7 on cpu 0 eip 0x7b addr 0x80000002--kill proc
@@ -173,5 +152,7 @@ haya direcciones virtuales sin memoria reservada para ellas.
 
 \subsubsection{Ejecución de tuberías \texttt{ls | wc}}
 \begin{listing}[style=consola]
-    $:
+    $ ls | wc
+    30 120 736 
+    Output code: 0
 \end{listing}
