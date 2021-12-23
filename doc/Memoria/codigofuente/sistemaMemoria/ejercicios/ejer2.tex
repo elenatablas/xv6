@@ -24,6 +24,7 @@
 
 \par La primera parte de la condición sirve para filtrar aquellos fallos de página
 que contengan errores. La segunda maneja el caso de fallos en la página inválida debajo de la pila.
+\newpage
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
@@ -64,6 +65,7 @@ actualizamos el valor del tamaño del proceso actual.
 \par En el caso de que se reduzca, también se deberá liberar las páginas
 correspondientes.
 
+\newpage
 \subsubsection{xv6/vm.c}
 \begin{listing}
 @@ -323,5 +323,5 @@ copyuvm(pde_t *pgdir, uint sz)
@@ -118,6 +120,8 @@ eso, debe de saltar la excepción correspondiente.
     Output code: 0
 \end{listing}
 
+\newpage
+
 \begin{listing}[style=consola]
     $ tsbrk4
     Debe imprimir 1: 1.
@@ -168,3 +172,4 @@ eso, debe de saltar la excepción correspondiente.
     30 120 736 
     Output code: 0
 \end{listing}
+\newpage

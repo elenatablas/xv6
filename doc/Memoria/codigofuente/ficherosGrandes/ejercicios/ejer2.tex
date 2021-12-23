@@ -4,7 +4,7 @@
     \textbf{2.[itrunc()]} Modifica \texttt{xv6} para manejar el borrado de ficheros con 
     bloques doblemente indirectos.
 \end{ejer}
-
+\newpage
 \subsection{Desarrollo}
 \subsubsection{xv6/fs.c}
 \begin{listing}
@@ -52,7 +52,7 @@ a bloque. Para ello, la estrategia a seguir es ir liberando
 los bloques de las tablas más profundas y cuando están liberados
 todos los bloques, entonces liberar la estrcutura que indexa dichos
 bloques.
-
+\newpage
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ big

@@ -50,7 +50,7 @@ de llamada al sistema ahora aceptan los argumentos.
 \end{listing}
 \par Ajustamos las deficiones de las funciones \texttt{wait()} y \texttt{exit()}
 para que puedan ser visibles ahora con los argumentos correctos para el código del sistema operativo.
-
+\newpage
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
 @@ -16,14 +16,17 @@
@@ -90,6 +90,7 @@ de salida del proceso) y un puntero a enteros.
 \end{listing}
 \par Para poder guardar el código de salida del proceso tuvimos que añadir otro campo a la estructura \texttt{struct proc}.
 
+\newpage
 \subsubsection{xv6/proc.c}
 \begin{listing}
 @@ -227,5 +227,5 @@ exit(int exit_satus)
@@ -223,6 +224,7 @@ como status de salida.
 \par Para que nuestro programa esté disponible en el shell de \texttt{xv6}, insertamos 
 \texttt{\_exitwait} a la definición \texttt{UPROGS} en el \texttt{Makefile}.
 
+\newpage
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ exitwait

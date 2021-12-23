@@ -22,7 +22,7 @@
 implementada a través de la función \texttt{sys\_sbrk()} en \texttt{sysproc.c}.
 \par No llama a \texttt{growproc()} en caso de que el proceso crezca e incrementa el tamaño del proceso \texttt{myproc()->sz}.
 Devuelve el tamaño antiguo, pero no reserva memoria.
-
+\newpage
 \subsubsection{xv6/trap.c}
 \begin{listing}
 @@ -77,9 +77,30 @@ trap(struct trapframe *tf)
@@ -65,6 +65,9 @@ regresando después al espacio de usuario para que continue.
 tenemos que mapear.
 \par La implementación hace uso de \texttt{PGROUNDDOWN(oldsz)} para alinear las direcciones
 de memoria al inicio de la página que corresponda.
+
+\newpage
+
 \subsubsection{xv6/vm.c}
 \begin{listing}
 @@ -60,4 +60,4 @@ int

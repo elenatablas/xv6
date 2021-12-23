@@ -5,6 +5,9 @@
     No puedes cambiar el tamaño del \texttt{nodo-i} en disco, por lo que sacrificaremos un bloque directo para 
     implementar el doblemente indirecto.
 \end{ejer}
+
+\newpage
+
 \subsection{Desarrollo}
 \subsubsection{xv6/param.h}
 
@@ -83,6 +86,7 @@ de ficheros.
 
 \par Sustituimos un bloque directo del i-nodo para colocar los enlaces
 doblemente indirectos en la estructura guardada en disco.
+\newpage
 
 \subsubsection{xv6/fs.c}
 \begin{listing}
