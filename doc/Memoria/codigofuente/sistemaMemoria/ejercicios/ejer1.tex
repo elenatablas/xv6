@@ -8,7 +8,7 @@
 \subsection{Desarrollo}
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
-@@ -57,10 +57,11 @@ sys_sbrk(void)
+@@ -57,6 +57,6 @@ sys_sbrk(void)
     if(argint(0, &n) < 0)
         return -1;
 -   if(growproc(n) < 0)
@@ -25,7 +25,7 @@ Devuelve el tamaño antiguo, pero no reserva memoria.
 
 \subsubsection{xv6/trap.c}
 \begin{listing}
-@@ -77,10 +77,39 @@ trap(struct trapframe *tf)
+@@ -77,9 +77,30 @@ trap(struct trapframe *tf)
     case T_IRQ0 + IRQ_SPURIOUS:
         cprintf("cpu%d: spurious interrupt at %x:%x\n",
                 cpuid(), tf->cs, tf->eip);
@@ -50,10 +50,6 @@ Devuelve el tamaño antiguo, pero no reserva memoria.
 +           kfree(mem);
 +           break;
 +       }
-+       cprintf("pid %d %s: trap %d err %d on cpu %d "
-+               "eip 0x%x addr 0x%x--kill proc\n",
-+               myproc()->pid, myproc()->name, tf->trapno,
-+               tf->err, cpuid(), tf->eip, rcr2());
 +       break;
 +   }
     //PAGEBREAK: 13
@@ -67,7 +63,7 @@ el espacio de usuario mapeando una nueva página física en la dirección que ge
 regresando después al espacio de usuario para que continue.
 \subsubsection{xv6/vm.c}
 \begin{listing}
-@@ -60,7 +60,7 @@ int
+@@ -60,4 +60,4 @@ int
 -   static int
 +   int
     mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm)

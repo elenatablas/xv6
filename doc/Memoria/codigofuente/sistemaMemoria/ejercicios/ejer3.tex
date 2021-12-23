@@ -12,7 +12,7 @@
 
 \subsubsection{xv6/exec.c}
 \begin{listing}
-@@ -68,6 +68,8 @@ exec(char *path, char **argv)
+@@ -68,5 +68,7 @@ exec(char *path, char **argv)
     sz = PGROUNDUP(sz);
 +   uint sz_cod_datos = sz + PGSIZE;
 -   if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)    
@@ -26,7 +26,7 @@
 
 \subsubsection{xv6/proc.h}
 \begin{listing}
-@@ -50,6 +50,7 @@ struct proc {
+@@ -50,4 +50,5 @@ struct proc {
         struct inode *cwd;           // Current directory
         char name[16];               // Process name (debugging)
         int exit_status;             // Estatus de salida
@@ -36,7 +36,7 @@
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
-@@ -70,22 +70,25 @@ sys_sbrk(void)
+@@ -70,6 +70,10 @@ sys_sbrk(void)
     else // argumento negativo
     {
         if((curproc->sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)

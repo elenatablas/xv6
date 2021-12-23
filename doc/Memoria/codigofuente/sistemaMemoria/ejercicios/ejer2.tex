@@ -16,7 +16,7 @@
 \subsection{Desarrollo}
 \subsubsection{xv6/trap.c}
 \begin{listing}
-    @@ -79,31 +79,34 @@ trap(struct trapframe *tf)
+    @@ -79,2 +79,3 @@ trap(struct trapframe *tf)
     case T_PGFLT:
     {
 +       if (!(tf->err & 1) && !(rcr2() > myproc()->sz)) { 
@@ -24,7 +24,7 @@
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
-@@ -52,18 +52,32 @@ sys_sbrk(void)
+@@ -52,13 +52,22 @@ sys_sbrk(void)
     int
     sys_sbrk(void)
     {
@@ -56,14 +56,14 @@
     }
 \end{listing}
 \par Añadimos el caso de un argumento negativo al llamarse a \texttt{sbrk()}
-\par TODO: Manejar el caso de fallos en la página inválida debajo de la pila.
-\par TODO: Asegurarse de que funciona el uso por parte del kernel de páginas de 
+\par Manejar el caso de fallos en la página inválida debajo de la pila.
+\par Asegurarse de que funciona el uso por parte del kernel de páginas de 
 usuario que todavía no han sido reservadas (p.e. si un programa pasa una dirección 
 de la zona de usuario todavía no reservada a \texttt{read()}).
 
 \subsubsection{xv6/vm.c}
 \begin{listing}
-@@ -323,10 +323,10 @@ copyuvm(pde_t *pgdir, uint sz)
+@@ -323,5 +323,5 @@ copyuvm(pde_t *pgdir, uint sz)
     for(i = 0; i < sz; i += PGSIZE){
         if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
 -           panic("copyuvm: pte should exist");
@@ -79,7 +79,7 @@ haya direcciones virtuales sin memoria reservada para ellas.
 
 \subsubsection{xv6/Makefile}
 \begin{listing}
-@@ -189,6 +189,11 @@ UPROGS=\
+@@ -189,2 +189,7 @@ UPROGS=\
     _dup2test\
     _exitwait\
 +   _tsbrk1\
@@ -90,12 +90,13 @@ haya direcciones virtuales sin memoria reservada para ellas.
 \end{listing}
 
 \subsubsection{Salida de los ficheros prueba}
-\subsubsection{Salida del fichero prueba}
+
 \begin{listing}[style=consola]
     $ tsbrk1
     Debe imprimir 1: 1.
     Output code: 0
 \end{listing}
+
 \begin{listing}[style=consola]
     $ tsbrk2
     ..........................................................................................
@@ -103,12 +104,14 @@ haya direcciones virtuales sin memoria reservada para ellas.
      trap 14 err 7 on cpu 0 eip 0x30a addr 0x2ffc--kill proc
     Output code: 14
 \end{listing}
+
 \begin{listing}[style=consola]
     $ tsbrk3
     Debe imprimir los 50 primeros caracteres de README:
     xv6 is a re-implementation of Dennis Ritchie's and
     Output code: 0
 \end{listing}
+
 \begin{listing}[style=consola]
     $ tsbrk4
     Debe imprimir 1: 1.
@@ -124,6 +127,7 @@ haya direcciones virtuales sin memoria reservada para ellas.
 
     Output code: 0
 \end{listing}
+
 \par \texttt{test1();}
 \begin{listing}[style=consola]
     $ tsbrk5
@@ -132,6 +136,7 @@ haya direcciones virtuales sin memoria reservada para ellas.
     pid 3 tsbrk5: trap 14 err 6 on cpu 0 eip 0x23 addr 0x3001--kill proc
     Output code: 14
 \end{listing}
+
 \par \texttt{test2();}
 \begin{listing}[style=consola]
     $ tsbrk5
@@ -141,6 +146,7 @@ haya direcciones virtuales sin memoria reservada para ellas.
     pid 83 tsbrk5: trap 14 err 7 on cpu 0 eip 0x59 addr 0x1a1f--kill proc
     Output code: 14
 \end{listing}
+
 \par \texttt{test3();}
 \begin{listing}[style=consola]
     $ tsbrk5

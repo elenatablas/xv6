@@ -17,7 +17,7 @@ y \texttt{wait} que hay a lo largo del sistema operativo para que acepten un par
 
 \subsubsection{xv6/user.h}
 \begin{listing}
-@@ -1,3 +1,8 @@
+@@ -1,6 +1,10 @@
 +   #define WIFEXITED(status)   (((status) & 0x7f) == 0)
 +   #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
 +   #define WIFSIGNALED(status) (((status) & 0x7f) != 0)
@@ -36,7 +36,7 @@ de llamada al sistema ahora aceptan los argumentos.
 
 \subsubsection{xv6/defs.h}
 \begin{listing}
-@@ -104,3 +104,3 @@
+@@ -104,4 +104,4 @@
 //PAGEBREAK: 16
 // proc.c
     int             cpuid(void);
@@ -51,6 +51,7 @@ de llamada al sistema ahora aceptan los argumentos.
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
+@@ -16,14 +16,17 @@
     int
     sys_exit(void)
     {
@@ -89,14 +90,14 @@ de salida del proceso) y un puntero a enteros.
 
 \subsubsection{xv6/proc.c}
 \begin{listing}
-@@ -227,7 +227,7 @@ exit(int exit_satus)
+@@ -227,5 +227,5 @@ exit(int exit_satus)
     void
 -   exit()
 +   exit(int exit_status)
     {
         struct proc *curproc = myproc();
         struct proc *p;
-@@ -241,7 +241,13 @@ exit(int exit_satus)
+@@ -241,3 +241,8 @@ exit(int exit_satus)
 +       if (curproc->killed)
 +            curproc->exit_status = exit_status+1;
 +       else { // salida normal
@@ -105,12 +106,12 @@ de salida del proceso) y un puntero a enteros.
         begin_op();
         iput(curproc->cwd);
         end_op();
-@@ -276,7 +281,7 @@ wait(int *exit_status)
+@@ -276,3 +281,3 @@ wait(int *exit_status)
     int
 -   wait()
 +   wait(int *exit_status)
     {
-@@ -292,8 +297,7 @@ wait(int *exit_status)
+@@ -292,3 +297,4 @@ wait(int *exit_status)
         pid = p->pid;
 +       *exit_status = p->exit_status;
         kfree(p->kstack);
@@ -127,7 +128,7 @@ de salida del proceso) y un puntero a enteros.
 
 \subsubsection{xv6/sh.c}
 \begin{listing}
-@@ -167,7 +167,9 @@ main(void)
+@@ -167,7 +167,12 @@ main(void)
         }
         if(fork1() == 0)
         runcmd(parsecmd(buf));
@@ -147,7 +148,7 @@ ejecute un programa produzca el código de salida correspondiente.
 
 \subsubsection{xv6/trap.c}
 \begin{listing}
-@@ -38,11 +38,11 @@ trap(struct trapframe *tf)
+@@ -38,10 +38,10 @@ trap(struct trapframe *tf)
     {
     if(tf->trapno == T_SYSCALL){
         if(myproc()->killed)
@@ -160,11 +161,11 @@ ejecute un programa produzca el código de salida correspondiente.
 +           exit(tf->trapno);
         return;
     }
-@@ -100,7 +100,7 @@ trap(struct trapframe *tf)
+@@ -100,2 +100,2 @@ trap(struct trapframe *tf)
         if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
 -           exit();
 +           exit(tf->trapno);
-@@ -110,5 +110,5 @@ trap(struct trapframe *tf)
+@@ -110,2 +110,2 @@ trap(struct trapframe *tf)
         if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
 -           exit();
 +           exit(tf->trapno);

@@ -19,6 +19,7 @@
 
 \subsubsection{xv6/usys.S}
 \begin{listing}
+@@ -31,3 +31,4 @@
     SYSCALL(uptime)
     SYSCALL(date)
     SYSCALL(dup2)
@@ -27,13 +28,13 @@
 
 \subsubsection{xv6/user.h}
 \begin{listing}
-@@ -3,6 +3,9 @@
+@@ -3,3 +3,5 @@
     #define WIFSIGNALED(status) (((status) & 0x7f) != 0)
     #define WEXITTRAP(status)   (((status) & 0x7f)-1)
 
 +   #define F_PAGES 0
 +   #define F_BYTES 1
-@@ -44,6 +47,7 @@ 
+@@ -44,4 +47,5 @@ 
 // system calls
     extern int uptime(void);
     extern int date(struct rtcdate*);
@@ -43,12 +44,12 @@
 
 \subsubsection{xv6/syscall.c}
 \begin{listing}
-@@ -105,6 +105,7 @@
+@@ -105,3 +105,4 @@
     extern int sys_uptime(void);
     extern int sys_date(void);
     extern int sys_dup2(void);
 +   extern int sys_freemem(void);
-@@ -130,6 +131,7 @@ static int (*syscalls[])(void) = {
+@@ -130,4 +131,5 @@ static int (*syscalls[])(void) = {
     [SYS_close]   sys_close,
     [SYS_date]    sys_date,
     [SYS_dup2]    sys_dup2,
@@ -58,7 +59,7 @@
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
-@@ -85,1 +85,15 @@ int
+@@ -85,1 +85,16 @@ int
 +   int 
 +   sys_freemem (void)
 +   {
@@ -79,13 +80,13 @@
 
 \subsubsection{xv6/defs.h}
 \begin{listing}
-@@ -68,6 +68,7 @@ 
+@@ -68,4 +68,5 @@ 
 // kalloc.c
     void            kfree(char*);
     void            kinit1(void*, void*);
     void            kinit2(void*, void*);
 +   int             getNumFreePages(void);
-@@ -187,6 +187,7 @@
+@@ -187,2 +187,3 @@
 // vm.c
     void clearpteu(pde_t *pgdir, char *uva);
 +   int mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
@@ -97,13 +98,13 @@
 
 \subsubsection{xv6/kalloc.c}
 \begin{listing}
-@@ -21,6 +21,7 @@ struct {
+@@ -21,4 +21,5 @@ struct {
     struct spinlock lock;
     int use_lock;
     struct run *freelist;
 +   int num_free;
 } kmem;
-@@ -32,12 +32,16 @@ kinit1(void *vstart, void *vend)
+@@ -32,7 +32,8 @@ kinit1(void *vstart, void *vend)
 void
 kinit1(void *vstart, void *vend)
 {
@@ -120,7 +121,7 @@ kinit1(void *vstart, void *vend)
     if(kmem.use_lock)
         release(&kmem.lock);
 }
-@@ -88,9 +90,17 @@ kalloc(void)
+@@ -88,6 +90,15 @@ kalloc(void)
     r = kmem.freelist;
     if(r)
 +   {
@@ -141,7 +142,7 @@ kinit1(void *vstart, void *vend)
 
 \subsection{Ficheros de prueba}
 \begin{listing}
-@@ -194,6 +194,7 @@ UPROGS=\
+@@ -194,2 +194,3 @@ UPROGS=\
     _tsbrk4\
     _tsbrk5\
 +   _tfreem\

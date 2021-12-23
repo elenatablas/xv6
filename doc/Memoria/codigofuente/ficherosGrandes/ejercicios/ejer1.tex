@@ -9,7 +9,7 @@
 \subsubsection{xv6/param.h}
 
 \begin{listing}
-@@ -10,5 +10,5 @@
+@@ -10,4 +10,4 @@
     #define MAXOPBLOCKS  10  // max # of blocks any FS op writes
     #define LOGSIZE      (MAXOPBLOCKS*3)  // max data blocks in on-disk log
     #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
@@ -19,7 +19,7 @@
 
 \subsubsection{xv6/file.h}
 \begin{listing}
-@@ -22,7 +22,7 @@ struct inode {
+@@ -22,5 +22,5 @@ struct inode {
     short minor;
     short nlink;
     uint size;
@@ -30,14 +30,14 @@
 
 \subsubsection{xv6/fs.h}
 \begin{listing}
-@@ -21,9 +21,10 @@ struct superblock {
+@@ -21,3 +21,4 @@ struct superblock {
 -   #define NDIRECT 12
 +   #define NDIRECT 11
     #define NINDIRECT (BSIZE / sizeof(uint))
 +   #define NDINDIRECT (NINDIRECT * NINDIRECT)
 -   #define MAXFILE (NDIRECT + NINDIRECT)
 +   #define MAXFILE (NDIRECT + NINDIRECT + NDINDIRECT)
-@@ -32,7 +33,7 @@ struct dinode {
+@@ -32,5 +33,5 @@ struct dinode {
     short minor;          // Minor device number (T_DEV only)
     short nlink;          // Number of links to inode in file system
     uint size;            // Size of file (bytes)
@@ -48,12 +48,12 @@
 
 \subsubsection{xv6/fs.c}
 \begin{listing}
-@@ -375,8 +376,8 @@ bmap(struct inode *ip, uint bn)
+@@ -375,2 +376,3 @@ bmap(struct inode *ip, uint bn)
 -   uint addr, *a;
 -   struct buf *bp;
 +   uint addr, *a, *b;
 +   struct buf *bp, *bp2;
-@@ -405,32 +406,49 @@ bmap(struct inode *ip, uint bn)
+@@ -405,6 +406,31 @@ bmap(struct inode *ip, uint bn)
     if(bn < NINDIRECT){
         brelse(bp);
         return addr;
@@ -92,7 +92,7 @@
 
 \subsubsection{xv6/Makefile}
 \begin{listing}
-@@ -194,6 +194,7 @@ UPROGS=\
+@@ -194,3 +194,4 @@ UPROGS=\
     _tsbrk4\
     _tsbrk5\
     _tfreem\
