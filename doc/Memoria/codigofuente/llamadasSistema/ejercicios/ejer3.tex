@@ -48,6 +48,8 @@ de llamada al sistema ahora aceptan los argumentos.
 +   int             wait(int*);
     void            wakeup(void*);
 \end{listing}
+\par Ajustamos las deficiones de las funciones \texttt{wait()} y \texttt{exit()}
+para que puedan ser visibles ahora con los argumentos correctos para el código del sistema operativo.
 
 \subsubsection{xv6/sysproc.c}
 \begin{listing}
@@ -97,7 +99,8 @@ de salida del proceso) y un puntero a enteros.
     {
         struct proc *curproc = myproc();
         struct proc *p;
-@@ -241,3 +241,8 @@ exit(int exit_satus)
+@@ -241,3 +241,9 @@ exit(int exit_satus)
++       // TRAP
 +       if (curproc->killed)
 +            curproc->exit_status = exit_status+1;
 +       else { // salida normal
@@ -125,6 +128,38 @@ de salida del proceso) y un puntero a enteros.
         return pid;
     }
 \end{listing}
+
+\par En ambas funciones, hemos cambiado la definición para que admita el parámetro correspondiente.
+
+\par En el caso del \texttt{exit()}, la funcionalidad es similar a la inical,
+pero hemos añadido la implementación necesaria para que guarde en la estructura
+del proceso el status correspondiente.
+
+ %%% IMAGEN DE MACROS %%%
+\begin{figure}[H]
+	\includegraphics[width=\textwidth]{macroStatus}
+	\centering
+	\caption{Valor status devuelto por \texttt{wait()}.}
+    	\label{fig:macroStatus}
+\end{figure}
+
+\par El status es calculado según las macros \texttt{WEXITSTATUS(status)} y
+\texttt{WEXITTRAP(status)}, como indica la figura \ref{fig:macroStatus}. Estas están
+definidas en el fichero \texttt{xv6/user.h} anteriormente citado.
+
+\par La macro \texttt{WEXITSTATUS(status)} se queda con los 8 bits más significativos y
+es usada por las terminaciones de programa normales.
+
+\par Por otro lado, la macro \texttt{WEXITTRAP(status)}, se queda con los 7 bits menos
+significativos y es usada por las terminaciones de programa debido a interrupciones. 
+
+\par Para implementar el código de \texttt{exit()}, tenemos que pensar a la inversa y
+colocar en los 8 bits más significatos o o 7 bits menos significativos según el caso
+que corresponda.
+
+\par En el caso del \texttt{wait()} lo que hace es colocar en
+el parámetro que nos han pasado, que es un puntero, el valor del status entregado por el hijo, que estará almacenado en la estructura
+del proceso del hijo.
 
 \subsubsection{xv6/sh.c}
 \begin{listing}
@@ -171,6 +206,9 @@ ejecute un programa produzca el código de salida correspondiente.
 +           exit(tf->trapno);
 \end{listing}
 
+\par Modificamos el \texttt{xv6/trap.c} para enviarle a estos \texttt{exit()} el número de trap
+como status de salida.
+
 \subsection{Fichero de prueba}
 \subsubsection{xv6/Makefile}
 \begin{listing}
@@ -182,6 +220,8 @@ ejecute un programa produzca el código de salida correspondiente.
     _dup2test\
 +   _exitwait\
 \end{listing}
+\par Para que nuestro programa esté disponible en el shell de \texttt{xv6}, insertamos 
+\texttt{\_exitwait} a la definición \texttt{UPROGS} en el \texttt{Makefile}.
 
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
@@ -291,3 +331,7 @@ ejecute un programa produzca el código de salida correspondiente.
     fork test OK
     Output code: 0
 \end{listing}
+
+\par Los 40 primeros hijos dan error, mientras que los siguientes
+funcionan correctamente (hasta 66, ya que llega al número máximo
+de procesos disponibles en xv6 (NPROC=64)).

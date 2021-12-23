@@ -94,6 +94,20 @@ al sistema para los programas de usuario.
 +   }
 \end{listing}
 
+\par La función \texttt{dup2()} recibe dos argumentos: \texttt{oldfd} y \texttt{newfd}. El objetivo
+de dicha función es copiar en \texttt{newfd} el descriptor de fichero \texttt{oldfd}. En caso
+de que sean iguales, devuelve el mismo descriptor de fichero.
+\par Si \texttt{newfd} es un descriptor de fichero abierto, lo cierra antes de ser
+reutilizado. 
+\par Para el argumento \texttt{newfd}, hemos tenido que utilizar la función \texttt{argint()}
+y no \texttt{argfd()}, porque \texttt{argfd()} comprueba que el descriptor de fichero está abierto, 
+en cambio \texttt{newfd} puede estar abierto o cerrado.
+
+\par La función \texttt{dup2()} también cierra el fichero apuntado por \texttt{newfd}, antes de ser reutilizado.
+
+\par Esta llamada al sistema, manipula la tabla de ficheros abiertos \texttt{myproc()->ofile}
+con el objetivo de implementar la funcionalidad necesaria para el \texttt{dup2();}.
+
 \subsection{Fichero de prueba}
 \subsubsection{xv6/Makefile}
 \begin{listing}
@@ -104,6 +118,9 @@ al sistema para los programas de usuario.
     _clear\
 +   _dup2test\
 \end{listing}
+\par Para que nuestro programa esté disponible en el shell de \texttt{xv6}, insertamos 
+\texttt{\_dup2test} a la definición \texttt{UPROGS} en el \texttt{Makefile}.
+
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ dup2test

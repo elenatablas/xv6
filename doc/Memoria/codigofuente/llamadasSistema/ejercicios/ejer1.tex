@@ -74,7 +74,9 @@ al sistema para los programas de usuario.
 \end{listing}
 \par Añadimos la función \texttt{sys\_date()} con su implementación en \texttt{sysproc.c}
 donde se implementan las llamadas al sistema que se realizan en \texttt{syscall()}.
-
+\par Esta llamada recibe un argumento, que será el puntero donde se almacena
+la estructura \texttt{rtcdate}, que es donde actualizaremos la información de la fecha
+actual usando la llamada \texttt{cmostime();}
 \subsection{Fichero de prueba}
 \subsubsection{xv6/date.c}
 \begin{listing}
