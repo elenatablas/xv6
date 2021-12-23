@@ -15,6 +15,7 @@
 
 \usepackage{times}
 \usepackage{ulem} % texto tachado
+\usepackage{soul}
 \usepackage{lipsum}
 \usepackage{comment}
 
@@ -114,4 +115,26 @@ backgroundcolor=\color{gray75},
 }
 
 \graphicspath{ {images/} }
+
+\usepackage{array,tikz}
+\usetikzlibrary{matrix,positioning}
+
+\tikzset{  % Define some styles
+  my table/.style = {
+    matrix of nodes,
+    nodes = {minimum width=3em, minimum height=2.5em, inner sep=3pt},
+    draw,
+    inner sep=0pt,
+  },
+  my arrow/.style = {
+    -latex,
+    shorten >= -5pt,
+    shorten <= -5pt,
+    black!50!black!60,
+  }
+}
+% Macro to draw the lines between rows
+\def\drawLineBelowRow#1#2{% #1: row number, #2: matrix name
+  \draw (#2.west|-#2-#1-1.south) -- (#2.east|-#2-#1-1.south);
+}
 

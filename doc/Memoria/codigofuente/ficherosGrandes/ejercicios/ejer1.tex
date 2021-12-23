@@ -17,6 +17,8 @@
 +   #define FSSIZE 20000 
 \end{listing}
 
+\par Cambiamos el tamaño máximo del sistema de ficheros.
+
 \subsubsection{xv6/file.h}
 \begin{listing}
 @@ -22,5 +22,5 @@ struct inode {
@@ -27,6 +29,10 @@
 +   uint addrs[NDIRECT+1+1];
   };
 \end{listing}
+
+\par Sustituimos un bloque directo del i-nodo para colocar los enlaces
+doblemente indirectos en la estructura guardada en memoria.
+
 
 \subsubsection{xv6/fs.h}
 \begin{listing}
@@ -45,6 +51,38 @@
 +   uint addrs[NDIRECT+1+1]; // Data block addresses (Directos + BSI + BDI)
   };
 \end{listing}
+\begin{center}
+\begin{tikzpicture}  
+    \matrix[my table] (A) { % First table (it is called A)
+       type\\
+       mayor\\
+       minor\\
+       nlink\\
+       size\\
+       adress 1\\
+       .... \\
+       \st{adress 12}\\
+       indirect \\
+       dindirect \\
+    };
+    \drawLineBelowRow{1}{A}
+    \drawLineBelowRow{2}{A}
+    \drawLineBelowRow{3}{A}
+    \drawLineBelowRow{4}{A}
+    \drawLineBelowRow{5}{A}
+    \drawLineBelowRow{6}{A}
+    \drawLineBelowRow{7}{A}
+    \drawLineBelowRow{8}{A}
+    \drawLineBelowRow{9}{A}
+\end{tikzpicture} 
+\par \texttt{struct dinode}
+\end{center}
+\par Quitamos uno de los bloques directos (quedando en 11 bloques directos)
+\par Actualizamos el tamaño maximo posible por un fichero en el sistema
+de ficheros.
+
+\par Sustituimos un bloque directo del i-nodo para colocar los enlaces
+doblemente indirectos en la estructura guardada en disco.
 
 \subsubsection{xv6/fs.c}
 \begin{listing}
@@ -86,6 +124,53 @@
     panic("bmap: out of range");
  }
 \end{listing}
+\begin{center}
+	\begin{tikzpicture} 
+        \matrix[my table] (D) { 
+			.... \\
+            NDINDIRECT \\
+		};
+        \drawLineBelowRow{1}{D}
+		\drawLineBelowRow{2}{D}
+		\matrix[my table, right=of D] (A) { 
+            A \\
+			A[index\_a] =address 1\\
+			.... \\
+			address 128\\
+		};
+		\drawLineBelowRow{1}{A}
+		\drawLineBelowRow{2}{A}
+        \drawLineBelowRow{3}{A}
+		\matrix[my table, right= of A] (B) { 
+            B \\
+			B[index\_b] = address 1\\
+			.... \\
+			address 128\\
+		};
+		\drawLineBelowRow{1}{B}
+		\drawLineBelowRow{2}{B}
+        \drawLineBelowRow{3}{B}
+        \draw[my arrow] (D-2-1) -- (A-1-1);
+		\draw[my arrow] (A-2-1) -- (B-1-1);
+	\end{tikzpicture}
+	
+\end{center}
+
+\par Siguiendo la estructura del método \texttt{bmap()} implementamos la
+funcionalidad necesaria para que pueda mapear bloques almacenados
+en bloques doblemente indirectos. 
+
+\par Para llegar a la dirección correspondiente tendremos que recorrer las 
+dos tablas.
+
+\par Primero tenemos que encontrar el índice \texttt{index\_a} de la primera tabla (A), que
+apuntará a la segunda tabla (B). Para ello dividimos el \texttt{bn}
+restante entre el número de entradas que tiene la tabla (128).
+
+\par Una vez nos encontramos en la segunda tabla (B), debemos encontrar el índice \texttt{index\_b}
+de la segunda tabla, que es el que apuntará a la dirección solicitada.
+Para ello usamos el resto de la división \texttt{bn} entre el número de entradas
+que tiene la tabla (128). 
 
 
 \subsection{Ficheros de prueba}

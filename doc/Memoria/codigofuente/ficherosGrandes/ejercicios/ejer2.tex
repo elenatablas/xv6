@@ -45,6 +45,14 @@ itrunc(struct inode *ip)
     iupdate(ip);
 }
 \end{listing}
+
+\par A diferencia del primer ejercicio, en este caso tenemos que 
+recorrer integramente todas las tablas para ir liberando bloque
+a bloque. Para ello, la estrategia a seguir es ir liberando
+los bloques de las tablas más profundas y cuando están liberados
+todos los bloques, entonces liberar la estrcutura que indexa dichos
+bloques.
+
 \subsubsection{Salida del fichero prueba}
 \begin{listing}[style=consola]
     $ big
@@ -62,3 +70,8 @@ itrunc(struct inode *ip)
     done; ok
     Output code: 0
 \end{listing}
+
+\par Para probar este ejercicio, hemos ejecutado el programa \texttt{big}, luego
+hemos eliminado el archivo generado y ejecutado de nuevo el programa. Si crea
+el archivo nuevamente, es que funciona correctamente, ya que si no hubiera liberado
+completamente la memoria, no habría suficiente espacio para crearlo. 
