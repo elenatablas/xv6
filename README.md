@@ -46,5 +46,5 @@ bloque directo para implementar el doblemente indirecto
 - Modifica xv6 para manejar el borrado de ficheros con bloques doble-
 mente indirectos.
 
-## Licence
-This project is licensed under the [MIT]() Licence - see the [LICENSE]() file for details.
+# Licence
+This project is licensed under the [MIT](https://github.com/elenatablas/xv6/blob/master/LICENSE) Licence - see the [LICENSE](https://github.com/elenatablas/xv6/blob/master/LICENSE) file for details.
