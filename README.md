@@ -6,6 +6,8 @@ Proyecto de Ampliación de Sistemas Operativos para 3º de Ingenieria Informáti
 
 Se parte de la implementación del Sistema Operativo XV6 incompleta y se pide realizar ciertas tareas para completarlo.
 
+Este proyecto ha sido realizado por Enrique Rodriguez Lopez y Elena Peréz Gonzalez Tablas.
+
 # Requisitos
 
 Para poder usar el proyecto, necesitaremos el emulador QEMU.
@@ -43,3 +45,6 @@ No puedes cambiar el tamaño del nodo-i en disco, por lo que sacrificaremos un
 bloque directo para implementar el doblemente indirecto
 - Modifica xv6 para manejar el borrado de ficheros con bloques doble-
 mente indirectos.
+
+## Licence
+This project is licensed under the [MIT]() Licence - see the [LICENSE]() file for details.
